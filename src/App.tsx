@@ -22,7 +22,7 @@ function App() {
   }, [location.pathname]);
 
   useEffect(() => {
-    function raf(time) {
+    const raf = (time: number) =>  {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
