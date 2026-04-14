@@ -9,7 +9,6 @@ import {
   Mail,
   CardSim,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
 
 export default function Navbar() {
   return (

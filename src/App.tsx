@@ -1,11 +1,10 @@
 import './App.css'
-import Stars from '@/components/Stars.jsx';
-import Fog from '@/components/Fog.jsx'
-import ScrollToHash from '@/components/Hash.jsx'
+import Stars from '@/components/Stars.tsx';
+import Fog from '@/components/Fog.tsx'
+import ScrollToHash from '@/components/Hash.tsx'
 import Mouse from '@/components/Mouse.tsx'
 import Lenis from '@studio-freight/lenis';
 import { useEffect, useState } from 'react'
-import { useScroll } from "framer-motion";
 import { Routes, Route, useLocation } from 'react-router-dom';
 import RootLayout from '@/pages/RootLayout';
 import ProjectsInfo from '@/pages/Projects/modal/Projects-info';
@@ -13,7 +12,6 @@ import AllProjects from '@/pages/Projects/AllProjects';
 
 function App() {
   const [isAllProjects, setIsAllProjects] = useState(false);
-  const { scrollYProgress } = useScroll();
   const location = useLocation();
   const lenis = new Lenis({
     duration: 1.2,

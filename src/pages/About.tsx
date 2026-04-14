@@ -58,7 +58,7 @@ function AboutSlide({ about, i, total, scrollYProgress }: AboutSlideProps) {
   );
 
   return (
-    <motion.div style={{ opacity, y }} className={`absolute w-full max-w-3xl px-4 sm:px-0 ${direction === 1 ? "left-0 sm:pr-10" : "right-0 sm:pl-10"}`}>
+    <motion.div style={{ opacity, y }} className={`absolute w-full max-w-3xl px-4 sm:px-0 left-1/2 -translate-x-1/2 sm:translate-x-0 ${direction === 1 ? "sm:left-0 sm:pr-10" : "sm:right-0 sm:pl-10"}`}>
       <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-white">{about.title}</h2>
       <Balancer>
         <p className="text-base sm:text-lg text-zinc-200/90 mb-4 sm:mb-6">{about.description}</p>
@@ -127,7 +127,7 @@ export default function About() {
               Sobre mí
             </div>
           </ScrollReveal>
-          <div className="hidden sm:block absolute left-1/2 top-10 bottom-10 w-0.5 bg-[#1D2A3A]/80">
+          <div className="hidden lg:block absolute left-1/2 top-10 bottom-10 w-0.5 bg-[#1D2A3A]/80">
             <motion.div
               style={{ scaleY: lineScale, transformOrigin: "top" }}
               className="absolute inset-0 bg-white"

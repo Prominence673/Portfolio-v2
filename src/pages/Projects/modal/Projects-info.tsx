@@ -1,4 +1,4 @@
-import { useEffect, useState, type EventHandler } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, X, Github, ExternalLink } from "lucide-react";

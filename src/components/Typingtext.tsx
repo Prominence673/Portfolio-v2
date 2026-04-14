@@ -78,7 +78,7 @@ export function TypingText({
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   // 
-  }, []);
+  });
 
   return (
     <span className={className}>

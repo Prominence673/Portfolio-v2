@@ -357,7 +357,6 @@ interface AllProjectCardProps {
 function AllProjectCard({
   project,
   index,
-  scrollYProgress,
   navigate,
 }: AllProjectCardProps) {
   return (

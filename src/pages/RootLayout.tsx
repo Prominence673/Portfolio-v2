@@ -1,10 +1,7 @@
 import { lazy, Suspense } from 'react';
-import Stars from '@/components/Stars.jsx';
-import Fog from '@/components/Fog.jsx';
-import Mouse from '@/components/Mouse.tsx';
 import Loading from '@/components/Loading.tsx';
 
-const Navbar = lazy(() => import('@/components/navbar'));
+const Navbar = lazy(() => import('@/components/Navbar'));
 const Home = lazy(() => import('@/pages/Home'));
 const About = lazy(() => import('@/pages/About'));
 const Skills = lazy(() => import('@/pages/Skills'));
@@ -17,11 +14,6 @@ const Footer = lazy(() => import('@/components/Footer'));
 export default function RootLayout() {
   return (
     <div className="min-h-screen w-full text-white app-gradient">
-      {/* Effects */}
-      <Stars />
-      <Fog />
-      <Mouse />
-
       {/* One Page Style */}
       <Suspense fallback={<Loading />}>
         <Navbar />

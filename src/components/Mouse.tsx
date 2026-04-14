@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Rotate3D } from "lucide-react";
 
 export default function CustomCursor() {
   const [pos, setPos] = useState({ x: 0, y: 0 });

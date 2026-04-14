@@ -1,5 +1,5 @@
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState} from "react";
 import { TypingText } from "@/components/Typingtext"
 
 export default function Home() {
