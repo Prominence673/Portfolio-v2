@@ -1,6 +1,13 @@
 MIT License
 
-Copyright (c) 2026 Lautaro
+This project uses open-source software:
+- Tailwind CSS (MIT)
+- React (MIT)
+- Framer Motion (MIT)
+- Lucide React (ISC)
+- Tilt (MIT)
+
+Copyright (c) 2025 Lautaro
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
