@@ -1,7 +1,7 @@
 import Balancer from "react-wrap-balancer";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Clock, Users, Target } from "lucide-react";
-import { useRef } from "react";
+import { useRef, memo, useMemo, useState, useEffect } from "react";
 import { useScroll, motion, useTransform, MotionValue } from "framer-motion";
 
 const about_data = [
@@ -30,17 +30,20 @@ const about_data = [
   },
 ];
 
+const TOTAL_SLIDES = about_data.length;
+
 interface AboutSlideProps {
   about: (typeof about_data)[0];
   i: number;
-  total: number;
   scrollYProgress: MotionValue<number>;
+  enableAnimations: boolean;
 }
-function AboutSlide({ about, i, total, scrollYProgress }: AboutSlideProps) {
-  const isLast = i === total - 1;
-  const segmentSize = 1 / total;
-  const direction = i % 2 === 0 ? 1 : -1
 
+const AboutSlide = memo(function AboutSlide({ about, i, scrollYProgress, enableAnimations }: AboutSlideProps) {
+  const isLast = i === TOTAL_SLIDES - 1;
+  const direction = i % 2 === 0 ? 1 : -1;
+
+  const segmentSize = 1 / TOTAL_SLIDES;
   const start = i * segmentSize;
   const mid = start + segmentSize * 0.4;
   const end = start + segmentSize;
@@ -48,17 +51,33 @@ function AboutSlide({ about, i, total, scrollYProgress }: AboutSlideProps) {
   const opacity = useTransform(
     scrollYProgress,
     isLast ? [start, mid] : [start, mid, end],
-    isLast ? [0, 1]      : [0, 1, 0]
+    isLast ? [0, 1] : [0, 1, 0]
   );
 
   const y = useTransform(
     scrollYProgress,
     isLast ? [start, mid] : [start, mid, end],
-    isLast ? [30, 0]      : [30, 0, -30]
+    isLast ? [30, 0] : [30, 0, -30]
   );
 
+  // Solo renderizar con animación si está habilitada
+  if (!enableAnimations) {
+    return (
+      <div className={`absolute w-full max-w-3xl px-4 sm:px-0 translate-x-0 ${direction === 1 ? "2xl:left-0 2xl:pr-10" : "2xl:right-0 2xl:pl-10"}`}>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-white">{about.title}</h2>
+        <Balancer>
+          <p className="text-base sm:text-lg text-zinc-200/90 mb-4 sm:mb-6">{about.description}</p>
+          {about.description2 && (
+            <p className="text-base sm:text-lg text-zinc-200/90 mb-6 sm:mb-8">{about.description2}</p>
+          )}
+        </Balancer>
+        {i === 0 && <FirstSlideContent about={about} />}
+      </div>
+    );
+  }
+
   return (
-    <motion.div style={{ opacity, y }} className={`absolute w-full max-w-3xl px-4 sm:px-0 left-1/2 -translate-x-1/2 sm:translate-x-0 ${direction === 1 ? "sm:left-0 sm:pr-10" : "sm:right-0 sm:pl-10"}`}>
+    <motion.div style={{ opacity, y }} className={`absolute w-full max-w-3xl px-4 sm:px-0 translate-x-0 ${direction === 1 ? "2xl:left-0 2xl:pr-10" : "2xl:right-0 2xl:pl-10"}`}>
       <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-white">{about.title}</h2>
       <Balancer>
         <p className="text-base sm:text-lg text-zinc-200/90 mb-4 sm:mb-6">{about.description}</p>
@@ -66,87 +85,101 @@ function AboutSlide({ about, i, total, scrollYProgress }: AboutSlideProps) {
           <p className="text-base sm:text-lg text-zinc-200/90 mb-6 sm:mb-8">{about.description2}</p>
         )}
       </Balancer>
-      {i === 0 && (
-        <>
-          <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-5 sm:mb-6">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0F2742]/70 rounded-xl flex items-center justify-center border border-[#1D2A3A]/70">
-                <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-200" />
-              </div>
-              <div>
-                <p className="font-semibold text-white text-sm sm:text-base">{about.experience}</p>
-                <p className="text-xs sm:text-sm text-zinc-300">Experiencia práctica</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0F2742]/70 rounded-xl flex items-center justify-center border border-[#1D2A3A]/70">
-                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-200" />
-              </div>
-              <div>
-                <p className="font-semibold text-white text-sm sm:text-base">{about.projects}</p>
-                <p className="text-xs sm:text-sm text-zinc-300">Personales y académicos</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-gradient-to-r from-[#0F2742]/55 to-[#020617]/55 border border-[#1D2A3A]/60 rounded-2xl p-4 sm:p-6">
-            <p className="text-zinc-200/90 italic text-base sm:text-lg text-center">{about.quote}</p>
-          </div>
-        </>
-      )}
+      {i === 0 && <FirstSlideContent about={about} />}
     </motion.div>
   );
-}
+});
+
+const FirstSlideContent = memo(function FirstSlideContent({ about }: { about: (typeof about_data)[0] }) {
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-5 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0F2742]/70 rounded-xl flex items-center justify-center border border-[#1D2A3A]/70">
+            <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-200" />
+          </div>
+          <div>
+            <p className="font-semibold text-white text-sm sm:text-base">{about.experience}</p>
+            <p className="text-xs sm:text-sm text-zinc-300">Experiencia práctica</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0F2742]/70 rounded-xl flex items-center justify-center border border-[#1D2A3A]/70">
+            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-200" />
+          </div>
+          <div>
+            <p className="font-semibold text-white text-sm sm:text-base">{about.projects}</p>
+            <p className="text-xs sm:text-sm text-zinc-300">Personales y académicos</p>
+          </div>
+        </div>
+      </div>
+      <div className="bg-gradient-to-r from-[#0F2742]/55 to-[#020617]/55 border border-[#1D2A3A]/60 rounded-2xl p-4 sm:p-6">
+        <p className="text-zinc-200/90 italic text-base sm:text-lg text-center">{about.quote}</p>
+      </div>
+    </>
+  );
+});
 
 export default function About() {
   const ref = useRef<HTMLElement>(null);
+  const [enableAnimations, setEnableAnimations] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
   });
-  const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  return (
-    <>
-      <section
-        ref={ref}
-        id="about"
-        style={{ height: `calc(100vh + ${(about_data.length - 1) * 80}vh)` }}
-        className="relative"
-      >
 
-        <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center px-5 sm:px-10">
-          <ScrollReveal
-            x={0}
-            y={0}
-            className="w-full z-10 mb-10"
-            scrollYProgress={scrollYProgress}
-            range={[0, 0.15]}
-          >
-            <div className="absolute top-20 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0A192F]/70 border border-[#1D2A3A]/70 text-zinc-200 text-sm">
-              <Target className="w-4 h-4" />
-              Sobre mí
-            </div>
-          </ScrollReveal>
-          <div className="hidden lg:block absolute left-1/2 top-10 bottom-10 w-0.5 bg-[#1D2A3A]/80">
+  // Lazy load animaciones después de 1s
+  useEffect(() => {
+    const timer = setTimeout(() => setEnableAnimations(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const sectionHeight = useMemo(() => `calc(100vh + ${(TOTAL_SLIDES - 1) * 80}vh)`, []);
+
+  return (
+    <section
+      ref={ref}
+      id="about"
+      style={{ height: sectionHeight, contain: "layout style" }}
+    >
+      <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center px-5 sm:px-10">
+        <ScrollReveal
+          x={0}
+          y={0}
+          className="w-full z-10 mb-10"
+          scrollYProgress={scrollYProgress}
+          range={[0, 0.15]}
+        >
+          <div className="absolute top-20 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0A192F]/70 border border-[#1D2A3A]/70 text-zinc-200 text-sm">
+            <Target className="w-4 h-4" />
+            Sobre mí
+          </div>
+        </ScrollReveal>
+
+        {/* Timeline line - solo animada si las animaciones están habilitadas */}
+        <div className="left-0 2xl:left-1/2 absolute top-10 bottom-10 w-0.5 bg-[#1D2A3A]/80">
+          {enableAnimations ? (
             <motion.div
               style={{ scaleY: lineScale, transformOrigin: "top" }}
               className="absolute inset-0 bg-white"
             />
-          </div>
-          <div className="relative w-full flex items-center justify-center">
-            {about_data.map((about, i) => (
-              <AboutSlide
-                key={i}
-                about={about}
-                i={i}
-                total={about_data.length}
-                scrollYProgress={scrollYProgress}
-              />
-            ))}
-          </div>
-
+          ) : null}
         </div>
-      </section>
-    </>
+
+        <div className="relative w-full flex items-center justify-center">
+          {about_data.map((about, i) => (
+            <AboutSlide
+              key={i}
+              about={about}
+              i={i}
+              scrollYProgress={scrollYProgress}
+              enableAnimations={enableAnimations}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

@@ -1,55 +1,47 @@
-import { useEffect, useState } from "react";
-import Particles, { initParticlesEngine } from "@tsparticles/react";
-import { loadSlim } from "@tsparticles/slim";
+import Particles from "@tsparticles/react";
+import React ,{ useMemo } from "react";
 
-export default function Stars() {
-  const [init, setInit] = useState(false);
+const Stars = () => {
+  const options = useMemo(() => ({
+    fullScreen: { enable: true },
+    background: { color: "transparent" },
 
-  useEffect(() => {
-    initParticlesEngine(async (engine) => {
-      await loadSlim(engine);
-    }).then(() => setInit(true));
-  }, []);
+    particles: {
+      number: { value: 30 },
 
-  if (!init) return null;
+      color: { value: "#ffff" },
+
+      shape: { type: "circle" },
+
+      opacity: {
+        value: 0.8,
+        animation: {
+          enable: true,
+          speed: 0.2
+        }
+      },
+
+      size: {
+        value: { min: 1, max: 3 }
+      },
+
+      move: {
+        enable: false,
+        speed: 0.25,
+        direction: "bottomLeft" as const,
+        random: true,
+        straight: false,
+        outModes: { default: "out" as const }
+      },
+    },
+
+    detectRetina: true
+  }), []);
 
   return (
     <Particles
       id="stars"
-      options={{
-        fullScreen: { enable: true },
-        background: { color: "transparent" },
-
-        particles: {
-            number: { value: 40 },
-          
-            color: { value: "#ffff" },
-          
-            shape: { type: "circle" },
-          
-            opacity: {
-              value: 1,
-              animation: {
-                enable: true,
-                speed: 0.3
-              }
-            },
-          
-            size: {
-              value: { min: 1, max: 4 }
-            },
-          
-            move: {
-              enable: false,
-              speed: 0.25,
-              direction: "bottomLeft",
-              random: true,
-              straight: false,
-              outModes: { default: "out" }
-            },
-          },
-        detectRetina: true
-      }}
+      options={options}
       style={{
         position: "absolute",
         inset: 0,
@@ -58,3 +50,6 @@ export default function Stars() {
     />
   );
 }
+
+
+export default React.memo(Stars);

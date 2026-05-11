@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { useScroll, motion, MotionValue } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import type { Project } from "./interface/Projects-interface";
-import Mouse from "@/components/Mouse";
 import { ArrowRight, Search, X } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { allProjects } from "./data/projectsData";
@@ -106,7 +105,6 @@ export default function AllProjects() {
   return (
     <>
       <div className="min-h-screen w-full text-white app-gradient">
-        <Mouse />
         
         {/* Botón Volver Flotante */}
         <motion.button

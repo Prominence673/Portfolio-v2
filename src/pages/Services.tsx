@@ -220,8 +220,9 @@ function MobileServiceCard({ service }: { service: Service }) {
     >
       {/* Gradiente de fondo */}
       <div
-        className={`absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br ${service.gradient} opacity-10 rounded-full blur-3xl pointer-events-none`}
+        className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-br ${service.gradient} opacity-10 rounded-full blur-3xl pointer-events-none`}
       />
+
 
       {/* Línea decorativa superior */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0ea5e9]/50 to-transparent" />
