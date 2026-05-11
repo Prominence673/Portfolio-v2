@@ -1,5 +1,6 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState, memo, useEffect } from "react";
+import { Helmet } from 'react-helmet-async';
 import { TypingText } from "@/components/Typingtext"
 
 const PDFModal = memo(function PDFModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -144,8 +145,12 @@ export default function Home() {
   const footerY = useTransform(scrollYProgress, [0, 1], [0, 40]);
 
   return (
-    <>
-      <meta name="description" content="Portfolio de Lautaro Souza, desarrollador full stack especializado en React, TypeScript, Node.js y Tailwind CSS. Desarrollo de aplicaciones web modernas y escalables."/>
+<>
+      <Helmet>
+        <title>Inicio | Lautaro Souza - Portafolio</title>
+        <meta name="description" content="Desarrollador full stack especializado en React, Node.js y diseño de interfaces modernas. Disponible para proyectos de frontend, backend y fullstack." />
+        <link rel="canonical" href="https://portfoliov2-prominence.netlify.app/" />
+      </Helmet>
       <PDFModal isOpen={seePdf} onClose={() => setSeePdf(false)} />
       
       <section

@@ -1,5 +1,6 @@
 import { Clock, Users } from "lucide-react";
 import { useRef, memo, useState, useEffect } from "react";
+import { Helmet } from 'react-helmet-async';
 import { useScroll, motion, useTransform, MotionValue } from "framer-motion";
 
 const experiences = [
@@ -234,12 +235,18 @@ export default function Exp() {
   const containerHeight = `${VISIBLE_SLOTS * CARD_HEIGHT}vh`;
 
   return (
-    <section
-      ref={ref}
-      id="experience"
-      style={{ height: sectionHeight, contain: "layout style paint" }}
-      className="relative"
-    >
+    <>
+      <Helmet>
+        <title>Experiencia | Lautaro Souza - Prominence673</title>
+        <meta name="description" content="Trayectoria profesional de Lautaro Souza: pasantía en Oracle, proyectos personales con React y TypeScript, y formación técnica en EET N.° 7. Experiencia en entornos corporativos y desarrollo web." />
+        <link rel="canonical" href="https://portfoliov2-prominence.netlify.app/experience" />
+      </Helmet>
+      <section
+        ref={ref}
+        id="experience"
+        style={{ height: sectionHeight, contain: "layout style paint" }}
+        className="relative"
+      >
       <div className="sticky top-0 py-5 md:pb-0 h-screen flex flex-col justify-start pt-20 items-center px-4 sm:px-8 md:px-10 overflow-hidden">
         {/* Renderizar header animado o estático */}
         {enableAnimations ? (
@@ -264,5 +271,6 @@ export default function Exp() {
         </div>
       </div>
     </section>
+    </>
   );
 }

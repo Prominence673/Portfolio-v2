@@ -1,4 +1,5 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { Helmet } from 'react-helmet-async';
 import { Palette, ArrowRight } from "lucide-react";
 import { useScroll, motion } from "framer-motion";
 import { useState, useRef } from "react";
@@ -31,7 +32,11 @@ export default function Projects() {
   const [showDetails, setShowDetails] = useState(false);
   return (
     <>
-      <meta name="description" content="Explora mi portafolio de proyectos destacados, combinando arquitectura sólida y diseño cautivador. Descubre soluciones innovadoras desarrolladas con tecnologías modernas en desafíos de desarrollo web y móvil."/>
+      <Helmet>
+        <title>Proyectos | Lautaro Souza - Prominence673</title>
+        <meta name="description" content="Explora mi portafolio de proyectos destacados, combinando arquitectura sólida y diseño cautivador. Descubre soluciones innovadoras desarrolladas con tecnologías modernas en desafíos de desarrollo web y móvil." />
+        <link rel="canonical" href="https://portfoliov2-prominence.netlify.app/projects" />
+      </Helmet>
       {/* PROYECTOS */}
       <section
         ref={ref}

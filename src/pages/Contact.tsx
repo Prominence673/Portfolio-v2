@@ -1,5 +1,6 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Mail, Github, Linkedin } from "lucide-react";
+import { Helmet } from 'react-helmet-async';
 import { useRef } from "react";
 import { useScroll } from "framer-motion";
 
@@ -11,17 +12,22 @@ export default function Contact() {
   });
 
   return (
-    <section
-      ref={ref}
-      id="contact"
-      data-seo="contáctame email github linkedin proyectos colaboración desarrollo frontend backend"
-      className="
-        min-h-screen
-        flex flex-col justify-center items-center
-        px-4 sm:px-8 lg:px-10
-        py-16 sm:py-20
-      "
-    >
+    <>
+      <Helmet>
+        <title>Contacto | Lautaro Souza - Prominence673</title>
+        <meta name="description" content="Contáctame para proyectos de desarrollo frontend y backend. Disponible para colaboraciones freelance y a largo plazo. Email, GitHub y LinkedIn para conectar." />
+        <link rel="canonical" href="https://portfoliov2-prominence.netlify.app/contact" />
+      </Helmet>
+      <section
+        ref={ref}
+        id="contact"
+        className="
+          min-h-screen
+          flex flex-col justify-center items-center
+          px-4 sm:px-8 lg:px-10
+          py-16 sm:py-20
+        "
+      >
       {/* Header */}
       <ScrollReveal y={44} className="text-center mb-12 w-full max-w-xl mx-auto" scrollYProgress={scrollYProgress} range={[0, 0.4]}>
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#020617]/70 border border-[#1D2A3A]/60 text-zinc-200 text-sm mb-6">
@@ -155,5 +161,6 @@ export default function Contact() {
         </ScrollReveal>
       </div>
     </section>
+    </>
   );
 }

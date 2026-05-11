@@ -2,6 +2,7 @@ import Balancer from "react-wrap-balancer";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Clock, Users, Target } from "lucide-react";
 import { useRef, memo, useMemo, useState, useEffect } from "react";
+import { Helmet } from 'react-helmet-async';
 import { useScroll, motion, useTransform, MotionValue } from "framer-motion";
 
 const about_data = [
@@ -139,10 +140,15 @@ export default function About() {
   const sectionHeight = useMemo(() => `calc(100vh + ${(TOTAL_SLIDES - 1) * 80}vh)`, []);
 
   return (
-    <section
+    <>
+      <Helmet>
+        <title>Sobre Mí | Lautaro Souza - Portafolio</title>
+        <meta name="description" content="Desarrollador Frontend con base en Backend, apasionado por crear experiencias web funcionales y mantenibles. Experiencia en Oracle Argentina, React, TypeScript, y Tailwind CSS." />
+        <link rel="canonical" href="https://portfoliov2-prominence.netlify.app/about" />
+      </Helmet>
+      <section
       ref={ref}
       id="about"
-      data-seo="desarrollador frontend backend react typescript experiencia"
       style={{ height: sectionHeight, contain: "layout style" }}
     >
       <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center px-5 sm:px-10">
@@ -182,5 +188,6 @@ export default function About() {
         </div>
       </div>
     </section>
+    </>
   );
 }

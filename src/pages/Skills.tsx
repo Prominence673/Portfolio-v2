@@ -3,6 +3,7 @@ import { motion, useScroll } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import { Code, Database, Palette, Server, BookMarked } from "lucide-react";
 import { useRef } from "react";
+import { Helmet } from 'react-helmet-async';
 
 export default function Skills() {
   const ref = useRef<HTMLElement>(null);
@@ -46,7 +47,11 @@ export default function Skills() {
   ];
   return (
     <>
-      <meta name="description" content="Explora mi stack tecnológico: React, TypeScript, Node.js, ASP.NET, SQL Server, y más. Experiencia en desarrollo frontend, backend, bases de datos y herramientas de diseño. Proyectos personales y académicos con más de 3 años de experiencia."/>
+      <Helmet>
+        <title>Stack Tecnológico | Lautaro Souza - Portafolio</title>
+        <meta name="description" content="Explora mi stack tecnológico: React, TypeScript, Node.js, ASP.NET, SQL Server, y más. Experiencia en desarrollo frontend, backend, bases de datos y herramientas de diseño. Proyectos personales y académicos con más de 3 años de experiencia." />
+        <link rel="canonical" href="https://portfoliov2-prominence.netlify.app/skills" />
+      </Helmet>
       {/* HABILIDADES */}
       <section
         ref={ref}

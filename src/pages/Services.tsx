@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useScroll, motion, useTransform, MotionValue, useMotionValueEvent } from "framer-motion";
 import { Zap, Code, Smartphone, Cpu, CardSim } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { Helmet } from 'react-helmet-async';
 
 interface Service {
   id: number;
@@ -275,6 +276,11 @@ export default function Services() {
 
   return (
     <>
+      <Helmet>
+        <title>Servicios | Lautaro Souza - Prominence673</title>
+        <meta name="description" content="Servicios de desarrollo: aplicaciones web, móvil y de escritorio, automatización e integración de IA. Soluciones personalizadas con enfoque en rendimiento y UX." />
+        <link rel="canonical" href="https://portfoliov2-prominence.netlify.app/services" />
+      </Helmet>
       {/* Versión Desktop */}
       <section
         ref={ref}

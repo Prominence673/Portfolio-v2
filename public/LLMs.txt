@@ -15,3 +15,86 @@ https://portfoliov2-prominence.netlify.app/
 
 Autor:
 Lautaro Souza
+
+---
+
+## Información detallada del CV
+
+**Lautaro Souza**
+Desarrollador Frontend · Con conocimientos de Backend
+lautarosouza58@gmail.com
++54 11 2248-8249
+[Portfolio](https://portfoliov2-prominence.netlify.app/)
+[GitHub](https://github.com/Prominence673)
+[LinkedIn](https://www.linkedin.com/in/lautaro-souza-3069a5398/)
+
+### Perfil Profesional
+Desarrollador Frontend con base en Backend, enfocado en la creación de aplicaciones web funcionales, claras y mantenibles. Con más de 3 años de aprendizaje a través de proyectos reales y académicos, experiencia en pasantía en Oracle Argentina y graduado como Técnico en la EET N.º 7 de Lomas de Zamora. Interesado en buenas prácticas, arquitectura limpia y trabajo colaborativo, con motivación por seguir creciendo profesionalmente.
+
+### Experiencia
+**Pasantía — Oracle Argentina** (2024)
+• Participación en entorno corporativo real dentro de una empresa tecnológica de alcance global.
+• Exposición a metodologías de trabajo profesional, procesos y cultura de desarrollo empresarial.
+
+**Desarrollo Web — Proyectos Personales y Académicos** (2022 – Actualidad)
+• Desarrollo de aplicaciones web con React y TypeScript, aplicando arquitectura basada en componentes.
+• Implementación de interfaces responsivas con foco en experiencia de usuario y diseño consistente.
+• Integración de frontend con backends en ASP.NET y PHP.
+• Implementación de funcionalidades CRUD, formularios, validaciones y manejo de datos.
+• Uso de bases de datos relacionales: SQL Server y MySQL.
+• Trabajo colaborativo utilizando Git y GitHub.
+• Participación en refactorizaciones y migraciones de proyectos en desarrollo.
+
+### Proyectos Destacados
+**Mottoso Propiedades — Sistema de Gestión Inmobiliaria**
+React JSX · Vite · PHP · MySQL
+Sistema web completo para gestión y venta de propiedades para la inmobiliaria Mottoso Propiedades.
+• Desarrollo del frontend con React JSX y servidor Vite.
+• Backend en PHP con integración a base de datos MySQL.
+• Módulos de listado, gestión y publicación de propiedades.
+
+**Otter Task — Sistema de Gestión de Negocios y Cadenas**
+React TSX · Tailwind CSS · Framer Motion
+Aplicación web en desarrollo activo para la gestión integral de negocios y cadenas comerciales.
+• Frontend construido con React TSX con enfoque en modularidad y escalabilidad.
+• Gestión de múltiples sucursales y roles dentro del sistema.
+
+**Portfolio Personal**
+React TSX · Tailwind CSS · Framer Motion
+Portfolio web personal con animaciones, efectos de scroll y diseño moderno.
+• Implementación de animaciones y transiciones con Framer Motion.
+• Diseño responsivo y accesible con Tailwind CSS.
+• Efectos de scroll avanzados y componentes interactivos.
+Demo: https://portfolio-souz.netlify.app
+
+**Portfolio Otter Solutions — Proyecto Grupal**
+React JSX · Tailwind CSS · Framer Motion
+Portfolio web real para una consultora, realizado de forma colaborativa con enfoque en diseño moderno y animaciones.
+Demo: https://ottersolutions.netlify.app/ Repositorio: https://github.com/Eon-cloud-fgl/Portfolio-Eon-Solution
+
+**Sistemas de Gestión Empresarial — Académicos**
+React · ASP.NET · SQL Server
+Aplicaciones de gestión empresarial desarrolladas en contexto educativo con frontend React y backend ASP.NET.
+
+### Educación
+**Técnico en Informática** (2018 – 2025)
+Escuela de Educación Técnica N.º 7 — Lomas de Zamora
+
+### Certificaciones
+**JavaScript Algorithms and Data Structures** — freeCodeCamp
+[Certificación](https://www.freecodecamp.org/certification/lucerofcc/javascript-v9)
+**Habilidades Esenciales de Empleo** — Municipio de Lomas de Zamora
+Comunicación efectiva, trabajo en equipo, liderazgo, roles, efectividad y formalidad laboral.
+
+### Habilidades Técnicas
+**Dominio:** JavaScript · TypeScript · PHP · C# · Python · SQL
+**Frontend:** React · HTML5 · CSS3 · Tailwind CSS · Framer Motion · Figma · Canva
+**Backend:** ASP.NET · Node.js (conocimientos)
+**Bases de datos:** MySQL · SQL Server
+**Herramientas:** Git · GitHub · Vite
+**Aprendiendo:** Next.js · Docker · PyTorch · TensorFlow · Photoshop · AWS
+
+### Idiomas
+Español Nativo
+Inglés B2 — Intermedio avanzado
+Alemán A2 — Básico
