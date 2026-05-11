@@ -142,6 +142,7 @@ export default function About() {
     <section
       ref={ref}
       id="about"
+      data-seo="desarrollador frontend backend react typescript experiencia"
       style={{ height: sectionHeight, contain: "layout style" }}
     >
       <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center px-5 sm:px-10">

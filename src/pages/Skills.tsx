@@ -46,6 +46,7 @@ export default function Skills() {
   ];
   return (
     <>
+      <meta name="description" content="Explora mi stack tecnológico: React, TypeScript, Node.js, ASP.NET, SQL Server, y más. Experiencia en desarrollo frontend, backend, bases de datos y herramientas de diseño. Proyectos personales y académicos con más de 3 años de experiencia."/>
       {/* HABILIDADES */}
       <section
         ref={ref}

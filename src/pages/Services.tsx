@@ -20,8 +20,8 @@ const services: Service[] = [
     description: "Desarrollo de aplicaciones web modernas, escalables y de alto rendimiento. Desde páginas estáticas hasta plataformas complejas con funcionalidades avanzadas. Implemento arquitecturas limpias, optimizaciones de performance y experiencias de usuario excepcionales.",
     icon: <Code className="w-12 h-12" />,
     technologies: ["React", "TypeScript", "Node.js", "PHP", "Tailwind CSS"],
-    color: "#ffff",
-    gradient: "from-[#0ea5e9] to-[#6366f1]",
+    color: "#ffffff",
+    gradient: "from-[#020617] to-[#05103d]",
   },
   {
     id: 2,
@@ -29,8 +29,8 @@ const services: Service[] = [
     description: "Desarrollo de herramientas y aplicaciones de escritorio con interfaces intuitivas y rendimiento optimizado. Creo soluciones robustas que funcionan de manera fluida en diferentes sistemas operativos, con enfoque en usabilidad y eficiencia.",
     icon: <Cpu className="w-12 h-12" />,
     technologies: ["Electron", "C#", "Python", "ASP.NET", "WPF"],
-    color: "#ffff",
-    gradient: "from-[#6366f1] to-[#7c3aed]",
+    color: "#ffffff",
+    gradient: "from-[#020617] to-[#05103d]",
   },
   {
     id: 3,
@@ -38,17 +38,17 @@ const services: Service[] = [
     description: "Creación de aplicaciones móviles nativas y multiplataforma con experiencia de usuario excepcional. Diseño responsive, animaciones fluidas y funcionalidades que mantienen a los usuarios enganchados en tus aplicaciones.",
     icon: <Smartphone className="w-12 h-12" />,
     technologies: ["React Native", "Flutter", "TypeScript", "Firebase"],
-    color: "#ffff",
-    gradient: "from-[#7c3aed] to-[#00f5ff]",
+    color: "#ffffff",
+    gradient: "from-[#020617] to-[#05103d]",
   },
   {
     id: 4,
     title: "Automatización e IA",
     description: "Soluciones inteligentes mediante automatización de procesos y integración de modelos de inteligencia artificial. Optimizo workflows, reduzco tiempos de procesamiento y agrego capacidades inteligentes a tus sistemas.",
     icon: <Zap className="w-12 h-12" />,
-    technologies: ["Python", "TensorFlow", "JavaScript", "Machine Learning", "N8N"],
-    color: "#ffff",
-    gradient: "from-[#00f5ff] to-[#0ea5e9]",
+    technologies: ["Python", "TensorFlow", "JavaScript", "ML", "N8N"],
+    color: "#ffffff",
+    gradient: "from-[#020617] to-[#05103d]",
   },
 ];
 
@@ -84,7 +84,7 @@ function ServicePanel({ service, i, total, scrollYProgress }: ServicePanelProps)
       style={{ opacity, x }}
       className="absolute w-full"
     >
-      <div className="flex flex-col justify-center px-6 lg:px-0">
+      <div className="flex flex-col justify-center px-4 lg:px-0">
         {/* Card con descripción */}
         <div className="relative p-8 rounded-2xl border border-[#1D2A3A]/50 bg-[#020617]/50 backdrop-blur-sm hover:border-[#1D2A3A]/80 transition-all duration-300">
           {/* Gradiente de fondo */}
@@ -104,7 +104,7 @@ function ServicePanel({ service, i, total, scrollYProgress }: ServicePanelProps)
 
           {/* Contenido */}
           <div className="relative z-10">
-            <h3 className={`text-2xl md:text-3xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r ${service.gradient}`}>
+            <h3 className={`text-2xl md:text-3xl font-bold mb-4 text-transparent bg-clip-text bg-white`}>
               {service.title}
             </h3>
 
@@ -167,7 +167,7 @@ function ServiceList({ scrollYProgress }: { scrollYProgress: MotionValue<number>
   });
 
   return (
-    <div className="flex flex-col justify-center space-y-6 px-6 lg:px-0">
+    <div className="flex flex-col justify-center space-y-6 px-4 lg:px-0">
       {services.map((s, index) => (
         <div
           key={s.id}
@@ -286,7 +286,7 @@ export default function Services() {
           {/* Header */}
           <ScrollReveal
             y={24}
-            className="text-center mb-16 w-full max-w-3xl mx-auto px-6 absolute top-5 z-10"
+            className="text-center mb-12 w-full max-w-3xl mx-auto px-8 absolute top-10 z-10"
             scrollYProgress={scrollYProgress}
             range={[0, 0.15]}
           >
@@ -294,7 +294,7 @@ export default function Services() {
               <CardSim className="w-4 h-4" />
               Servicios
             </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-white">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-white">
               Soluciones Personalizadas
             </h2>
             <p className="text-base sm:text-lg text-zinc-200/90 max-w-2xl mx-auto">
@@ -309,8 +309,8 @@ export default function Services() {
           </div>
 
           {/* Services */}
-          <div className="w-full relative flex items-center justify-center mt-16">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto w-full">
+          <div className="w-full relative flex items-center justify-center mt-32">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 max-w-5xl mx-auto w-full">
               {/* Lista - Izquierda (Fija) */}
               <ServiceList scrollYProgress={scrollYProgress} />
 
@@ -357,12 +357,12 @@ export default function Services() {
 
         {/* Decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 left-10 w-48 h-48 bg-[#00f5ff]/10 rounded-full blur-3xl opacity-20" />
-          <div className="absolute bottom-20 right-10 w-56 h-56 bg-[#7c3aed]/10 rounded-full blur-3xl opacity-20" />
+          <div className="absolute top-20 left-10 w-48 h-48 bg-white/5 rounded-full blur-3xl opacity-20" />
+          <div className="absolute bottom-20 right-10 w-56 h-56 bg-[#05103d]/30 rounded-full blur-3xl opacity-20" />
         </div>
 
         {/* Services Grid */}
-        <div className="w-full max-w-6xl mx-auto px-6 relative z-10">
+        <div className="w-full max-w-5xl mx-auto px-6 relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {services.map((service) => (
               <MobileServiceCard key={service.id} service={service} />

@@ -145,6 +145,7 @@ export default function Home() {
 
   return (
     <>
+      <meta name="description" content="Portfolio de Lautaro Souza, desarrollador full stack especializado en React, TypeScript, Node.js y Tailwind CSS. Desarrollo de aplicaciones web modernas y escalables."/>
       <PDFModal isOpen={seePdf} onClose={() => setSeePdf(false)} />
       
       <section

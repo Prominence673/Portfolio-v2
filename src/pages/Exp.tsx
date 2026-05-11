@@ -34,22 +34,22 @@ const experiences = [
 ];
 
 const VISIBLE_SLOTS = 2;
-const CARD_HEIGHT = 50;
+const CARD_HEIGHT = 42;
 const TOTAL_EXPERIENCES = experiences.length;
 
 // Contenido compartido de la tarjeta
 const ExperienceCardContent = memo(function ExperienceCardContent({ exp }: { exp: (typeof experiences)[0] }) {
   return (
     <div className="ml-12 sm:ml-16 flex-1">
-      <div className="bg-[#020617]/70 backdrop-blur-md border border-[#1D2A3A]/60 rounded-2xl p-4 sm:p-6 transition-all duration-300 hover:border-[#1D2A3A]">
+      <div className="bg-[#020617]/70 backdrop-blur-md border border-[#1D2A3A]/60 rounded-2xl p-3 sm:p-4 transition-all duration-300 hover:border-[#1D2A3A]">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-          <h4 className="text-lg sm:text-xl font-semibold text-white">{exp.title}</h4>
+          <h4 className="text-base sm:text-lg font-semibold text-white">{exp.title}</h4>
           <span className="text-sm text-zinc-200 bg-[#0A192F]/70 px-3 py-1 rounded-full mt-2 sm:mt-0 border border-[#1D2A3A]/60">
             {exp.period}
           </span>
         </div>
 
-        <p className="text-zinc-200/90 mb-4 leading-relaxed">{exp.desc}</p>
+        <p className="text-sm sm:text-base">{exp.desc}</p>
 
         <div className="flex items-center gap-2 text-sm text-zinc-300 mb-4">
           <Users className="w-4 h-4" />
@@ -142,7 +142,7 @@ const HeaderContent = memo(function HeaderContent() {
         <Clock className="w-4 h-4" />
         Trayectoria
       </div>
-      <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-white">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-white">
         Trayectoria Profesional
       </h2>
       <p className="text-base sm:text-lg text-zinc-200/90 max-w-2xl mx-auto">
@@ -174,7 +174,7 @@ const AnimatedHeader = memo(function AnimatedHeader({
 // Header estático
 const StaticHeader = memo(function StaticHeader() {
   return (
-    <div className="text-center mt-5 mb-8 sm:mb-16 w-full max-w-3xl mx-auto">
+    <div className="text-center mt-14 mb-10 sm:mb-20 w-full max-w-3xl mx-auto px-4">
       <HeaderContent />
     </div>
   );
@@ -230,7 +230,7 @@ export default function Exp() {
   const headerOpacityMV = useTransform(scrollYProgress, [0.1, 1], [0, 1]);
   const headerYMV = useTransform(scrollYProgress, [0, 0.12], [0, -24]);
 
-  const sectionHeight = `calc(100vh + ${TOTAL_EXPERIENCES * 70}vh)`;
+  const sectionHeight = `calc(100vh + ${TOTAL_EXPERIENCES * 55}vh)`;
   const containerHeight = `${VISIBLE_SLOTS * CARD_HEIGHT}vh`;
 
   return (
@@ -240,7 +240,7 @@ export default function Exp() {
       style={{ height: sectionHeight, contain: "layout style paint" }}
       className="relative"
     >
-      <div className="sticky top-0 py-5 md:pb-0 h-screen flex flex-col justify-center items-center px-4 sm:px-8 md:px-10 overflow-hidden">
+      <div className="sticky top-0 py-5 md:pb-0 h-screen flex flex-col justify-start pt-20 items-center px-4 sm:px-8 md:px-10 overflow-hidden">
         {/* Renderizar header animado o estático */}
         {enableAnimations ? (
           <AnimatedHeader headerOpacity={headerOpacityMV} headerY={headerYMV} />

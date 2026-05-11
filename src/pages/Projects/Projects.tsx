@@ -31,6 +31,7 @@ export default function Projects() {
   const [showDetails, setShowDetails] = useState(false);
   return (
     <>
+      <meta name="description" content="Explora mi portafolio de proyectos destacados, combinando arquitectura sólida y diseño cautivador. Descubre soluciones innovadoras desarrolladas con tecnologías modernas en desafíos de desarrollo web y móvil."/>
       {/* PROYECTOS */}
       <section
         ref={ref}

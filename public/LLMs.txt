@@ -1,0 +1,17 @@
+# Lautaro Souza Portfolio
+
+Portfolio de desarrollo full stack.
+
+Tecnologías:
+- React
+- TypeScript
+- Node.js
+- Tailwind CSS
+- ASP.NET
+- PHP
+
+Sitio:
+https://portfoliov2-prominence.netlify.app/
+
+Autor:
+Lautaro Souza

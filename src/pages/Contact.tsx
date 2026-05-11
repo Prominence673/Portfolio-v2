@@ -14,6 +14,7 @@ export default function Contact() {
     <section
       ref={ref}
       id="contact"
+      data-seo="contáctame email github linkedin proyectos colaboración desarrollo frontend backend"
       className="
         min-h-screen
         flex flex-col justify-center items-center
