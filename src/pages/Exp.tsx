@@ -1,7 +1,14 @@
 import { Clock, Users } from "lucide-react";
-import { useRef, memo, useState, useEffect } from "react";
-import { Helmet } from 'react-helmet-async';
-import { useScroll, motion, useTransform, MotionValue } from "framer-motion";
+import { useRef, useState } from "react";
+import { Helmet } from "react-helmet-async";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 
 const experiences = [
   {
@@ -28,249 +35,158 @@ const experiences = [
   {
     title: "Desarrollo Web — Proyectos Personales y Académicos",
     period: "2022 — Actualidad",
-    desc: "Desarrollo de aplicaciones web con React y TypeScript aplicando arquitectura basada en componentes. Implementación de interfaces responsivas con foco en UX. Integración de frontend con backends en ASP.NET y PHP. CRUD, formularios, validaciones, manejo de datos y trabajo colaborativo con Git.",
+    desc: "Desarrollo de aplicaciones web con React y TypeScript aplicando arquitectura basada en componentes. Interfaces responsivas, integración con backends en ASP.NET y PHP, manejo de datos y trabajo colaborativo con Git.",
     projects: "10+ repositorios en GitHub",
     tech: ["React", "TypeScript", "ASP.NET", "PHP", "SQL Server", "MySQL", "Git"],
   },
 ];
 
-const VISIBLE_SLOTS = 2;
-const CARD_HEIGHT = 42;
 const TOTAL_EXPERIENCES = experiences.length;
-
-// Contenido compartido de la tarjeta
-const ExperienceCardContent = memo(function ExperienceCardContent({ exp }: { exp: (typeof experiences)[0] }) {
-  return (
-    <div className="ml-12 sm:ml-16 flex-1">
-      <div className="bg-[#020617]/70 backdrop-blur-md border border-[#1D2A3A]/60 rounded-2xl p-3 sm:p-4 transition-all duration-300 hover:border-[#1D2A3A]">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-          <h4 className="text-base sm:text-lg font-semibold text-white">{exp.title}</h4>
-          <span className="text-sm text-zinc-200 bg-[#0A192F]/70 px-3 py-1 rounded-full mt-2 sm:mt-0 border border-[#1D2A3A]/60">
-            {exp.period}
-          </span>
-        </div>
-
-        <p className="text-sm sm:text-base">{exp.desc}</p>
-
-        <div className="flex items-center gap-2 text-sm text-zinc-300 mb-4">
-          <Users className="w-4 h-4" />
-          <span>{exp.projects}</span>
-        </div>
-
-        <div className="hidden sm:flex flex-wrap gap-2">
-          {exp.tech.map((techItem, j) => (
-            <span
-              key={j}
-              className="px-3 py-1 bg-[#0A192F]/70 text-zinc-100 rounded-full text-sm border border-[#1D2A3A]/60"
-            >
-              {techItem}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-});
-
-// Tarjeta estática (sin animaciones)
-const StaticExperienceCard = memo(function StaticExperienceCard({
-  exp,
-  topPercent,
-}: {
-  exp: (typeof experiences)[0];
-  topPercent: number;
-}) {
-  return (
-    <div style={{ top: `${topPercent}%` }} className="absolute w-full flex items-start gap-6">
-      <div className="absolute left-[27px] top-6 w-3 h-3 bg-white rounded-full border-2 border-[#020617] z-10" />
-      <ExperienceCardContent exp={exp} />
-    </div>
-  );
-});
-
-// Tarjeta animada (con Framer Motion)
-const AnimatedExperienceCard = memo(function AnimatedExperienceCard({
-  exp,
-  i,
-  scrollYProgress,
-  topPercent,
-}: {
-  exp: (typeof experiences)[0];
-  i: number;
-  scrollYProgress: MotionValue<number>;
-  topPercent: number;
-}) {
-  const isLast = i === TOTAL_EXPERIENCES - 1;
-  const segmentSize = 1 / TOTAL_EXPERIENCES;
-  const start = i * segmentSize;
-  const mid = start + segmentSize * 0.35;
-  const end = start + segmentSize;
-
-  const opacity = useTransform(
-    scrollYProgress,
-    isLast ? [start, mid] : [start, mid, end],
-    isLast ? [0, 1] : [0, 1, 0]
-  );
-
-  const y = useTransform(
-    scrollYProgress,
-    isLast ? [start, mid] : [start, mid, end],
-    isLast ? [20, 0] : [20, 0, -20]
-  );
-
-  const dotScale = useTransform(
-    scrollYProgress,
-    isLast ? [start, mid] : [start, mid, end],
-    isLast ? [0, 1] : [0, 1, 0]
-  );
-
-  return (
-    <motion.div style={{ opacity, y, top: `${topPercent}%` }} className="absolute w-full flex items-start gap-6">
-      <motion.div
-        style={{ scale: dotScale }}
-        className="absolute left-[27px] top-6 w-3 h-3 bg-white rounded-full border-2 border-[#020617] z-10"
-      />
-      <ExperienceCardContent exp={exp} />
-    </motion.div>
-  );
-});
-
-// Header content compartido
-const HeaderContent = memo(function HeaderContent() {
-  return (
-    <>
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#020617]/70 border border-[#1D2A3A]/60 text-zinc-200 text-sm mb-4">
-        <Clock className="w-4 h-4" />
-        Trayectoria
-      </div>
-      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-white">
-        Trayectoria Profesional
-      </h2>
-      <p className="text-base sm:text-lg text-zinc-200/90 max-w-2xl mx-auto">
-        Desarrollador Frontend con base en Backend, egresado como Técnico en Informática y con
-        experiencia en Oracle Argentina.
-      </p>
-    </>
-  );
-});
-
-// Header animado
-const AnimatedHeader = memo(function AnimatedHeader({
-  headerOpacity,
-  headerY,
-}: {
-  headerOpacity: MotionValue<number>;
-  headerY: MotionValue<number>;
-}) {
-  return (
-    <motion.div
-      style={{ opacity: headerOpacity, y: headerY }}
-      className="text-center mt-5 mb-8 sm:mb-16 w-full max-w-3xl mx-auto"
-    >
-      <HeaderContent />
-    </motion.div>
-  );
-});
-
-// Header estático
-const StaticHeader = memo(function StaticHeader() {
-  return (
-    <div className="text-center mt-14 mb-10 sm:mb-20 w-full max-w-3xl mx-auto px-4">
-      <HeaderContent />
-    </div>
-  );
-});
-
-// Contenedor de tarjetas
-const CardsContainer = memo(function CardsContainer({
-  enableAnimations,
-  scrollYProgress,
-}: {
-  enableAnimations: boolean;
-  scrollYProgress: MotionValue<number>;
-}) {
-  return (
-    <>
-      {experiences.map((exp, i) => {
-        const topPercent = (i % VISIBLE_SLOTS) * CARD_HEIGHT;
-
-        if (!enableAnimations) {
-          return <StaticExperienceCard key={i} exp={exp} topPercent={topPercent} />;
-        }
-
-        return (
-          <AnimatedExperienceCard
-            key={i}
-            exp={exp}
-            i={i}
-            scrollYProgress={scrollYProgress}
-            topPercent={topPercent}
-          />
-        );
-      })}
-    </>
-  );
-});
 
 export default function Exp() {
   const ref = useRef<HTMLElement>(null);
-  const [enableAnimations, setEnableAnimations] = useState(false);
+  const [activeExperience, setActiveExperience] = useState(0);
 
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
   });
 
-  useEffect(() => {
-    const timer = setTimeout(() => setEnableAnimations(true), 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  const rawLineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const lineScale = useSpring(rawLineScale, { stiffness: 80, damping: 24, mass: 0.35 });
 
-  // Always create the motion values to keep hook order stable.
-  const lineScaleMV = useTransform(scrollYProgress, [0.05, 0.95], [0, 1]);
-  const headerOpacityMV = useTransform(scrollYProgress, [0.1, 1], [0, 1]);
-  const headerYMV = useTransform(scrollYProgress, [0, 0.12], [0, -24]);
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    const next = Math.min(
+      Math.floor(latest * TOTAL_EXPERIENCES),
+      TOTAL_EXPERIENCES - 1
+    );
+    setActiveExperience((current) => current === next ? current : next);
+  });
 
-  const sectionHeight = `calc(100vh + ${TOTAL_EXPERIENCES * 55}vh)`;
-  const containerHeight = `${VISIBLE_SLOTS * CARD_HEIGHT}vh`;
+  const goToExperience = (index: number) => {
+    if (!ref.current) return;
+    const top = ref.current.getBoundingClientRect().top + window.scrollY;
+    const distance = ref.current.offsetHeight - window.innerHeight;
+    window.scrollTo({
+      top: top + (distance * index) / (TOTAL_EXPERIENCES - 1),
+      behavior: "smooth",
+    });
+  };
+
+  const experience = experiences[activeExperience];
 
   return (
     <>
       <Helmet>
         <title>Experiencia | Lautaro Souza - Prominence673</title>
-        <meta name="description" content="Trayectoria profesional de Lautaro Souza: pasantía en Oracle, proyectos personales con React y TypeScript, y formación técnica en EET N.° 7. Experiencia en entornos corporativos y desarrollo web." />
+        <meta name="description" content="Trayectoria profesional de Lautaro Souza: pasantía en Oracle, proyectos personales con React y TypeScript, y formación técnica en EET N.° 7." />
         <link rel="canonical" href="https://portfoliov2-prominence.netlify.app/experience" />
       </Helmet>
+
       <section
         ref={ref}
         id="experience"
-        style={{ height: sectionHeight, contain: "layout style paint" }}
-        className="relative"
+        style={{ height: `${TOTAL_EXPERIENCES * 100}vh`, contain: "layout style paint" }}
+        className="scroll-scene relative"
       >
-      <div className="sticky top-0 py-5 md:pb-0 h-screen flex flex-col justify-start pt-20 items-center px-4 sm:px-8 md:px-10 overflow-hidden">
-        {/* Renderizar header animado o estático */}
-        {enableAnimations ? (
-          <AnimatedHeader headerOpacity={headerOpacityMV} headerY={headerYMV} />
-        ) : (
-          <StaticHeader />
-        )}
+        {experiences.map((item, index) => (
+          <span
+            key={`snap-${item.title}`}
+            aria-hidden="true"
+            className="scene-snap-point pointer-events-none absolute left-0 h-px w-px"
+            style={{ top: `${index * 100}vh` }}
+          />
+        ))}
 
-        {/* Timeline con línea animada */}
-        <div className="relative mb-10 w-full max-w-3xl md:max-w-5xl" style={{ height: containerHeight }}>
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-[#1D2A3A]/80">
-            {enableAnimations ? (
+        <div className="sticky top-0 flex h-screen items-center overflow-hidden px-5 py-16 sm:px-10">
+          <div className="pointer-events-none absolute left-[12%] top-[18%] h-72 w-72 rounded-full bg-[#0ea5e9]/10 blur-[110px]" />
+          <div className="pointer-events-none absolute bottom-[8%] right-[8%] h-96 w-96 rounded-full bg-[#4338ca]/10 blur-[130px]" />
+
+          <div className="relative mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(280px,0.78fr)_minmax(0,1.55fr)] lg:gap-20">
+            <header className="relative lg:self-center">
+              <span className="mb-8 block font-mono text-xs tracking-[0.3em] text-[#7dd3fc]/70">
+                04 — EXPERIENCIA
+              </span>
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#1D2A3A]/60 bg-[#020617]/70 px-4 py-2 text-sm text-zinc-200">
+                <Clock className="h-4 w-4" />
+                Trayectoria
+              </div>
+              <h2 className="mb-5 text-3xl font-bold leading-tight text-white sm:text-5xl">
+                Trayectoria Profesional
+              </h2>
+              <p className="max-w-sm text-sm leading-7 text-zinc-300/75 sm:text-base">
+                Formación, experiencia y proyectos que construyeron mi perfil profesional.
+              </p>
+              <div className="mt-8 flex items-center gap-3 text-xs text-white/35">
+                <span className="h-px w-10 bg-[#7dd3fc]/50" />
+                Scroll para recorrer
+              </div>
+            </header>
+
+            <div className="relative min-h-[25rem] border-l border-[#1D2A3A]/80 pl-8 sm:pl-14">
               <motion.div
-                style={{ scaleY: lineScaleMV, transformOrigin: "top" }}
-                className="absolute inset-0 bg-white"
+                style={{ scaleY: lineScale, transformOrigin: "top" }}
+                className="absolute bottom-0 left-[-1px] top-0 w-0.5 bg-gradient-to-b from-[#7dd3fc] via-white to-[#818cf8] shadow-[0_0_14px_rgba(125,211,252,0.55)]"
               />
-            ) : null}
-          </div>
 
-          {/* Contenedor de tarjetas - dinámico basado en animaciones */}
-          <CardsContainer enableAnimations={enableAnimations} scrollYProgress={scrollYProgress} />
+              <nav aria-label="Navegación de trayectoria" className="absolute bottom-0 left-0 top-0 z-20 flex -translate-x-1/2 flex-col justify-between">
+                {experiences.map((item, index) => (
+                  <button
+                    key={item.title}
+                    type="button"
+                    onClick={() => goToExperience(index)}
+                    aria-label={`Ver ${item.title}`}
+                    aria-current={index === activeExperience ? "step" : undefined}
+                    className="group flex h-6 w-6 items-center justify-center"
+                  >
+                    <motion.span
+                      animate={{ scale: index === activeExperience ? 1 : 0.72 }}
+                      className={`block rounded-full border-2 border-[#020617] transition-colors duration-300 ${index <= activeExperience ? "h-3.5 w-3.5 bg-white" : "h-3 w-3 bg-[#1D2A3A] group-hover:bg-zinc-400"}`}
+                    />
+                  </button>
+                ))}
+              </nav>
+
+              <div className="flex min-h-[25rem] items-center">
+                <AnimatePresence initial={false}>
+                  <motion.article
+                    key={experience.title}
+                    initial={{ opacity: 0, x: 16, filter: "blur(3px)" }}
+                    animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, x: -12, filter: "blur(2px)" }}
+                    transition={{ duration: 0.68, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute inset-y-0 left-8 right-0 flex flex-col justify-center overflow-hidden rounded-[2rem] border border-[#1D2A3A]/70 bg-gradient-to-br from-[#071426]/90 via-[#020617]/88 to-black/80 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:left-14 sm:p-10"
+                  >
+                    <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#7dd3fc]/80 to-transparent" />
+                    <div className="absolute -right-10 -top-16 select-none font-mono text-[10rem] font-bold leading-none text-white/[0.025]">
+                      {String(activeExperience + 1).padStart(2, "0")}
+                    </div>
+                    <div className="relative z-10">
+                    <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <p className="mb-3 font-mono text-xs tracking-[0.2em] text-[#7dd3fc]/70">ETAPA {String(activeExperience + 1).padStart(2, "0")}</p>
+                        <h3 className="max-w-2xl text-xl font-semibold leading-snug text-white sm:text-3xl">{experience.title}</h3>
+                      </div>
+                      <span className="shrink-0 rounded-full border border-[#1D2A3A]/70 bg-[#0A192F]/80 px-4 py-1.5 text-xs text-zinc-200">{experience.period}</span>
+                    </div>
+                    <p className="mb-6 max-w-3xl text-sm leading-7 text-zinc-200/80 sm:text-base">{experience.desc}</p>
+                    <div className="mb-6 flex items-center gap-2 border-t border-white/[0.06] pt-5 text-sm text-zinc-400">
+                      <Users className="h-4 w-4" />
+                      <span>{experience.projects}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {experience.tech.map((tech) => (
+                        <span key={tech} className="rounded-full border border-[#1D2A3A]/60 bg-[#0A192F]/70 px-3 py-1 text-xs text-zinc-200">{tech}</span>
+                      ))}
+                    </div>
+                    </div>
+                  </motion.article>
+                </AnimatePresence>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
     </>
   );
 }

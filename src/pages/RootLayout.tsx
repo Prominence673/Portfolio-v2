@@ -16,6 +16,7 @@ const Services = lazy(() => import('@/pages/Services'));
 const Projects = lazy(() => import('@/pages/Projects/Projects'));
 const Contact = lazy(() => import('@/pages/Contact'));
 const Footer = lazy(() => import('@/components/Footer'));
+const CosmicInterlude = lazy(() => import('@/components/CosmicInterlude'));
 
 export default function RootLayout() {
   const [particlesReady, setParticlesReady] = useState(false);
@@ -49,9 +50,12 @@ export default function RootLayout() {
         <Navbar />
         <Home />
         <About />
+        <CosmicInterlude variant="orbit" />
         <Skills />
         <Exp />
+        <CosmicInterlude variant="voyage" />
         <Services />
+        <CosmicInterlude variant="singularity" />
         <Projects />
         <Contact />
         <Footer />

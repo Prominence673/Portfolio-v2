@@ -156,7 +156,7 @@ export default function Home() {
       <section
         ref={sectionRef}
         id="home"
-        className="relative flex min-h-screen w-full flex-col overflow-hidden"
+        className="scroll-scene relative flex min-h-screen w-full flex-col overflow-hidden"
         style={{ contain: "layout style" }}
       >
         {/* Decorativos renderizados de forma lazy */}

@@ -9,16 +9,26 @@ import ProjectsInfo from '@/pages/Projects/modal/Projects-info';
 import AllProjects from '@/pages/Projects/AllProjects';
 
 function App() {
-  const lenis = new Lenis({
-    duration: 1.2,
-    smoothWheel: true
-  });
   useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.65,
+      smoothWheel: true,
+      wheelMultiplier: 0.82,
+      touchMultiplier: 0.9,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    });
+
+    let animationFrame: number;
     const raf = (time: number) =>  {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      animationFrame = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    animationFrame = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      lenis.destroy();
+    };
   }, []);
 
   return (

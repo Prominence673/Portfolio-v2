@@ -1,9 +1,9 @@
 import Balancer from "react-wrap-balancer";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Clock, Users, Target } from "lucide-react";
-import { useRef, memo, useMemo, useState, useEffect } from "react";
+import { useRef, memo, useMemo, useState } from "react";
 import { Helmet } from 'react-helmet-async';
-import { useScroll, motion, useTransform, MotionValue } from "framer-motion";
+import { AnimatePresence, useMotionValueEvent, useScroll, motion, useSpring, useTransform } from "framer-motion";
 
 const about_data = [
   {
@@ -33,38 +33,117 @@ const about_data = [
 
 const TOTAL_SLIDES = about_data.length;
 
+const MiniPlanet = memo(function MiniPlanet({ index }: { index: number }) {
+  const planets = [
+    {
+      size: 252,
+      surface: "radial-gradient(circle at 34% 28%, #dbeafe 0%, #38bdf8 12%, #0284c7 34%, #075985 62%, #020617 100%)",
+      glow: "rgba(56,189,248,0.2)",
+      moons: [{ size: 24, x: 152, y: -78, color: "#d4d4d8" }],
+      asteroidBelt: false,
+      rings: 1,
+    },
+    {
+      size: 310,
+      surface: "radial-gradient(circle at 38% 30%, #ede9fe 0%, #818cf8 18%, #4338ca 48%, #1e1b4b 76%, #020617 100%)",
+      glow: "rgba(129,140,248,0.22)",
+      moons: [],
+      asteroidBelt: false,
+      rings: 3,
+    },
+    {
+      size: 218,
+      surface: "radial-gradient(circle at 32% 25%, #fed7aa 0%, #c2410c 24%, #7c2d12 58%, #1c0a05 100%)",
+      glow: "rgba(234,88,12,0.18)",
+      moons: [],
+      asteroidBelt: true,
+      rings: 0,
+    },
+    {
+      size: 278,
+      surface: "radial-gradient(circle at 38% 30%, #cffafe 0%, #0891b2 16%, #164e63 48%, #172554 75%, #020617 100%)",
+      glow: "rgba(34,211,238,0.18)",
+      moons: [
+        { size: 18, x: 154, y: -68, color: "#a5f3fc" },
+        { size: 30, x: -164, y: 76, color: "#94a3b8" },
+      ],
+      asteroidBelt: false,
+      rings: 2,
+    },
+  ];
+  const planet = planets[index % planets.length];
+  const asteroids = [0, 31, 66, 104, 139, 174, 211, 247, 284, 322];
+
+  return (
+    <div
+      aria-hidden="true"
+      className="relative flex items-center justify-center"
+      style={{ width: planet.size, height: planet.size }}
+    >
+      <div className="absolute -inset-[18%] rounded-full blur-3xl" style={{ backgroundColor: planet.glow }} />
+      <div className="absolute inset-[12%] rounded-full" style={{ background: planet.surface, boxShadow: `0 0 55px ${planet.glow}` }} />
+      <div className="absolute inset-[20%] rounded-full bg-[radial-gradient(circle_at_42%_38%,rgba(255,255,255,0.24),transparent_45%)]" />
+
+      {planet.rings >= 1 && (
+        <motion.div animate={{ rotate: [-16, 344] }} transition={{ duration: 34, repeat: Infinity, ease: "linear" }} className="absolute h-[38%] w-[132%] rounded-[50%] border border-[#7dd3fc]/25" />
+      )}
+      {planet.rings >= 2 && (
+        <motion.div animate={{ rotate: [18, -342] }} transition={{ duration: 46, repeat: Infinity, ease: "linear" }} className="absolute h-[52%] w-[150%] rounded-[50%] border border-white/12" />
+      )}
+      {planet.rings >= 3 && <div className="absolute h-[68%] w-[122%] rotate-[68deg] rounded-[50%] border border-[#818cf8]/20" />}
+
+      {planet.asteroidBelt && (
+        <motion.div animate={{ rotate: 360 }} transition={{ duration: 55, repeat: Infinity, ease: "linear" }} className="absolute inset-0">
+          {asteroids.map((angle, asteroidIndex) => (
+            <span
+              key={angle}
+              className="absolute left-1/2 top-1/2 rounded-full bg-orange-200/55"
+              style={{
+                width: 2 + (asteroidIndex % 3),
+                height: 2 + (asteroidIndex % 3),
+                transform: `rotate(${angle}deg) translateX(${planet.size * 0.68}px)`,
+              }}
+            />
+          ))}
+        </motion.div>
+      )}
+
+      {planet.moons.map((moon, moonIndex) => (
+        <motion.span
+          key={`${moon.x}-${moon.y}`}
+          animate={{ y: [0, moonIndex % 2 === 0 ? -5 : 5, 0] }}
+          transition={{ duration: 4 + moonIndex, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute rounded-full shadow-[0_0_14px_rgba(255,255,255,0.25)]"
+          style={{
+            width: moon.size,
+            height: moon.size,
+            left: `calc(50% + ${moon.x}px)`,
+            top: `calc(50% + ${moon.y}px)`,
+            backgroundColor: moon.color,
+          }}
+        />
+      ))}
+    </div>
+  );
+});
+
 interface AboutSlideProps {
   about: (typeof about_data)[0];
   i: number;
-  scrollYProgress: MotionValue<number>;
-  enableAnimations: boolean;
 }
 
-const AboutSlide = memo(function AboutSlide({ about, i, scrollYProgress, enableAnimations }: AboutSlideProps) {
-  const isLast = i === TOTAL_SLIDES - 1;
+const AboutSlide = memo(function AboutSlide({ about, i }: AboutSlideProps) {
   const direction = i % 2 === 0 ? 1 : -1;
 
-  const segmentSize = 1 / TOTAL_SLIDES;
-  const start = i * segmentSize;
-  const mid = start + segmentSize * 0.4;
-  const end = start + segmentSize;
-
-  const opacity = useTransform(
-    scrollYProgress,
-    isLast ? [start, mid] : [start, mid, end],
-    isLast ? [0, 1] : [0, 1, 0]
-  );
-
-  const y = useTransform(
-    scrollYProgress,
-    isLast ? [start, mid] : [start, mid, end],
-    isLast ? [30, 0] : [30, 0, -30]
-  );
-
-  // Solo renderizar con animación si está habilitada
-  if (!enableAnimations) {
-    return (
-      <div className={`absolute w-full max-w-3xl px-4 sm:px-0 translate-x-0 ${direction === 1 ? "2xl:left-0 2xl:pr-10" : "2xl:right-0 2xl:pl-10"}`}>
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: direction * 14, y: 6, filter: "blur(3px)" }}
+      animate={{ opacity: 1, x: 0, y: 0, filter: "blur(0px)" }}
+      exit={{ opacity: 0, x: direction * -10, y: -4, filter: "blur(2px)" }}
+      transition={{ duration: 0.68, ease: [0.16, 1, 0.3, 1] }}
+      className="absolute inset-x-0 flex w-full items-center"
+    >
+      <div className={`w-full max-w-3xl px-4 sm:px-8 xl:w-1/2 ${direction === 1 ? "xl:mr-auto xl:pr-16" : "xl:ml-auto xl:pl-16"}`}>
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-white">{about.title}</h2>
         <Balancer>
           <p className="text-base sm:text-lg text-zinc-200/90 mb-4 sm:mb-6">{about.description}</p>
@@ -74,19 +153,10 @@ const AboutSlide = memo(function AboutSlide({ about, i, scrollYProgress, enableA
         </Balancer>
         {i === 0 && <FirstSlideContent about={about} />}
       </div>
-    );
-  }
 
-  return (
-    <motion.div style={{ opacity, y }} className={`absolute w-full max-w-3xl px-4 sm:px-0 translate-x-0 ${direction === 1 ? "2xl:left-0 2xl:pr-10" : "2xl:right-0 2xl:pl-10"}`}>
-      <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-white">{about.title}</h2>
-      <Balancer>
-        <p className="text-base sm:text-lg text-zinc-200/90 mb-4 sm:mb-6">{about.description}</p>
-        {about.description2 && (
-          <p className="text-base sm:text-lg text-zinc-200/90 mb-6 sm:mb-8">{about.description2}</p>
-        )}
-      </Balancer>
-      {i === 0 && <FirstSlideContent about={about} />}
+      <div className={`absolute hidden w-1/2 items-center justify-center xl:flex ${direction === 1 ? "right-0" : "left-0"}`}>
+        <MiniPlanet index={i} />
+      </div>
     </motion.div>
   );
 });
@@ -123,21 +193,34 @@ const FirstSlideContent = memo(function FirstSlideContent({ about }: { about: (t
 
 export default function About() {
   const ref = useRef<HTMLElement>(null);
-  const [enableAnimations, setEnableAnimations] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
   });
 
-  // Lazy load animaciones después de 1s
-  useEffect(() => {
-    const timer = setTimeout(() => setEnableAnimations(true), 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  const rawLineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const lineScale = useSpring(rawLineScale, { stiffness: 80, damping: 24, mass: 0.35 });
+  const sectionHeight = useMemo(() => `${TOTAL_SLIDES * 100}vh`, []);
 
-  const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const sectionHeight = useMemo(() => `calc(100vh + ${(TOTAL_SLIDES - 1) * 80}vh)`, []);
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    const nextSlide = Math.min(
+      Math.floor(latest * TOTAL_SLIDES),
+      TOTAL_SLIDES - 1
+    );
+    setActiveSlide((current) => current === nextSlide ? current : nextSlide);
+  });
+
+  const goToSlide = (index: number) => {
+    if (!ref.current) return;
+
+    const sectionTop = ref.current.getBoundingClientRect().top + window.scrollY;
+    const scrollableDistance = ref.current.offsetHeight - window.innerHeight;
+    const target = sectionTop + (scrollableDistance * index) / (TOTAL_SLIDES - 1);
+
+    window.scrollTo({ top: target, behavior: "smooth" });
+  };
 
   return (
     <>
@@ -150,7 +233,16 @@ export default function About() {
       ref={ref}
       id="about"
       style={{ height: sectionHeight, contain: "layout style" }}
+      className="scroll-scene relative"
     >
+      {about_data.map((about, index) => (
+        <span
+          key={`snap-${about.title}`}
+          aria-hidden="true"
+          className="about-snap-point pointer-events-none absolute left-0 h-px w-px"
+          style={{ top: `${index * 100}vh` }}
+        />
+      ))}
       <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center px-5 sm:px-10">
         <ScrollReveal
           x={0}
@@ -165,27 +257,42 @@ export default function About() {
           </div>
         </ScrollReveal>
 
-        {/* Timeline line - solo animada si las animaciones están habilitadas */}
-        <div className="left-0 2xl:left-1/2 absolute top-10 bottom-10 w-0.5 bg-[#1D2A3A]/80">
-          {enableAnimations ? (
-            <motion.div
-              style={{ scaleY: lineScale, transformOrigin: "top" }}
-              className="absolute inset-0 bg-white"
-            />
-          ) : null}
+        {/* Timeline line */}
+        <div className="left-5 sm:left-10 xl:left-1/2 absolute top-10 bottom-10 w-0.5 bg-[#1D2A3A]/80">
+          <motion.div
+            style={{ scaleY: lineScale, transformOrigin: "top" }}
+            className="absolute inset-0 bg-gradient-to-b from-[#7dd3fc] via-white to-[#818cf8] shadow-[0_0_14px_rgba(125,211,252,0.55)]"
+          />
         </div>
 
         <div className="relative w-full flex items-center justify-center">
-          {about_data.map((about, i) => (
+          <AnimatePresence initial={false}>
             <AboutSlide
-              key={i}
-              about={about}
-              i={i}
-              scrollYProgress={scrollYProgress}
-              enableAnimations={enableAnimations}
+              key={activeSlide}
+              about={about_data[activeSlide]}
+              i={activeSlide}
             />
-          ))}
+          </AnimatePresence>
         </div>
+
+        <nav aria-label="Navegación de la sección Sobre mí" className="absolute bottom-10 left-5 top-24 z-20 flex -translate-x-1/2 flex-col justify-between sm:left-10 xl:left-1/2">
+          {about_data.map((about, index) => (
+            <button
+              key={about.title}
+              type="button"
+              onClick={() => goToSlide(index)}
+              aria-label={`Ver ${about.title}`}
+              aria-current={index === activeSlide ? "step" : undefined}
+              className="group flex h-6 w-6 items-center justify-center"
+            >
+              <motion.span
+                animate={{ scale: index === activeSlide ? 1 : 0.72 }}
+                transition={{ duration: 0.3 }}
+                className={`block rounded-full border-2 border-[#020617] transition-colors duration-300 ${index <= activeSlide ? "h-3.5 w-3.5 bg-white" : "h-3 w-3 bg-[#1D2A3A] group-hover:bg-zinc-400"}`}
+              />
+            </button>
+          ))}
+        </nav>
       </div>
     </section>
     </>

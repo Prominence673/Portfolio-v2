@@ -45,7 +45,7 @@ export default function ProjectsInfo() {
   };
 
   const handleClose = () => {
-    navigate("/#projects");
+    navigate("/all-projects");
   };
 
   const handleFullscreenPrev = () => {
