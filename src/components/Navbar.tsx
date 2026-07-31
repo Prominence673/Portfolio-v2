@@ -8,9 +8,10 @@ import {
   Briefcase,
   Mail,
   CardSim,
+  Gauge,
 } from "lucide-react";
 
-export default function Navbar() {
+export default function Navbar({ performanceMode, onTogglePerformance }: { performanceMode: boolean; onTogglePerformance: () => void }) {
   return (
     <motion.nav
       initial={{ opacity: 0, y: -20 }}
@@ -23,7 +24,7 @@ export default function Navbar() {
         md:w-full md:flex md:h-14 md:rounded-full
       "
     >
-      <ul className="w-full h-full flex justify-around md:justify-end md:px-10 md:gap-3 items-center text-white">
+      <ul className="w-full h-full grid grid-cols-7 md:flex md:justify-end md:px-10 md:gap-3 items-center text-white bg-[#020617]/85 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-t border-white/10 md:border-0">
         <Navlink to="#home" label="Inicio"><Home /></Navlink>
         <Navlink to="#about" label="Sobre mí"><UserRound /></Navlink>
         <Navlink to="#skills" label="Habilidades"><Code2 /></Navlink>
@@ -32,6 +33,16 @@ export default function Navbar() {
         <Navlink to="#contact" label="Contacto"><Mail /></Navlink>
         <Navlink to="#services" label="Servicios"><CardSim /></Navlink>
       </ul>
+      <button
+        type="button"
+        onClick={onTogglePerformance}
+        aria-pressed={performanceMode}
+        title={performanceMode ? "Desactivar modo rendimiento" : "Activar modo rendimiento"}
+        className={`fixed right-4 bottom-20 flex items-center gap-2 rounded-full border px-3 py-2 text-xs backdrop-blur-xl transition-colors md:bottom-auto md:right-8 md:top-20 ${performanceMode ? "border-emerald-400/45 bg-emerald-950/80 text-emerald-200" : "border-[#1D2A3A]/80 bg-[#020617]/80 text-zinc-300 hover:text-white"}`}
+      >
+        <Gauge className="h-4 w-4" />
+        <span className="hidden sm:inline">{performanceMode ? "Legacy activo" : "Modo rendimiento"}</span>
+      </button>
     </motion.nav>
   );
 }

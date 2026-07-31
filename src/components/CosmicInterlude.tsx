@@ -94,7 +94,7 @@ function SingularityScene() {
 
 export default function CosmicInterlude({ variant }: CosmicInterludeProps) {
   return (
-    <section aria-hidden="true" className="relative h-[68vh] min-h-[480px] w-full overflow-hidden">
+    <section aria-hidden="true" className="relative h-[52vh] min-h-[360px] w-full overflow-hidden sm:h-[68vh] sm:min-h-[480px]">
       <StarField />
       <div className="absolute inset-x-[8%] top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#0ea5e9]/5 blur-[110px]" />

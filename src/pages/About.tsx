@@ -130,10 +130,41 @@ const MiniPlanet = memo(function MiniPlanet({ index }: { index: number }) {
 interface AboutSlideProps {
   about: (typeof about_data)[0];
   i: number;
+  performanceMode?: boolean;
 }
 
-const AboutSlide = memo(function AboutSlide({ about, i }: AboutSlideProps) {
+const AboutSlide = memo(function AboutSlide({ about, i, performanceMode = false }: AboutSlideProps) {
   const direction = i % 2 === 0 ? 1 : -1;
+  const className = "absolute inset-x-0 flex w-full items-center";
+  const content = (
+    <>
+      <div className={`w-full max-w-3xl pl-11 pr-3 sm:px-8 xl:w-1/2 ${direction === 1 ? "xl:mr-auto xl:pr-16" : "xl:ml-auto xl:pl-16"}`}>
+        <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-white">{about.title}</h2>
+        {performanceMode ? (
+          <div>
+            <p className="text-base sm:text-lg text-zinc-200/90 mb-4 sm:mb-6">{about.description}</p>
+            {about.description2 && <p className="text-base sm:text-lg text-zinc-200/90 mb-6 sm:mb-8">{about.description2}</p>}
+          </div>
+        ) : (
+          <Balancer>
+            <p className="text-base sm:text-lg text-zinc-200/90 mb-4 sm:mb-6">{about.description}</p>
+            {about.description2 && (
+              <p className="text-base sm:text-lg text-zinc-200/90 mb-6 sm:mb-8">{about.description2}</p>
+            )}
+          </Balancer>
+        )}
+        {i === 0 && <FirstSlideContent about={about} />}
+      </div>
+
+      <div className={`performance-heavy absolute hidden w-1/2 items-center justify-center xl:flex ${direction === 1 ? "right-0" : "left-0"}`}>
+        <MiniPlanet index={i} />
+      </div>
+    </>
+  );
+
+  if (performanceMode) {
+    return <div className={className}>{content}</div>;
+  }
 
   return (
     <motion.div
@@ -141,22 +172,9 @@ const AboutSlide = memo(function AboutSlide({ about, i }: AboutSlideProps) {
       animate={{ opacity: 1, x: 0, y: 0, filter: "blur(0px)" }}
       exit={{ opacity: 0, x: direction * -10, y: -4, filter: "blur(2px)" }}
       transition={{ duration: 0.68, ease: [0.16, 1, 0.3, 1] }}
-      className="absolute inset-x-0 flex w-full items-center"
+      className={className}
     >
-      <div className={`w-full max-w-3xl px-4 sm:px-8 xl:w-1/2 ${direction === 1 ? "xl:mr-auto xl:pr-16" : "xl:ml-auto xl:pl-16"}`}>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-white">{about.title}</h2>
-        <Balancer>
-          <p className="text-base sm:text-lg text-zinc-200/90 mb-4 sm:mb-6">{about.description}</p>
-          {about.description2 && (
-            <p className="text-base sm:text-lg text-zinc-200/90 mb-6 sm:mb-8">{about.description2}</p>
-          )}
-        </Balancer>
-        {i === 0 && <FirstSlideContent about={about} />}
-      </div>
-
-      <div className={`absolute hidden w-1/2 items-center justify-center xl:flex ${direction === 1 ? "right-0" : "left-0"}`}>
-        <MiniPlanet index={i} />
-      </div>
+      {content}
     </motion.div>
   );
 });
@@ -164,7 +182,7 @@ const AboutSlide = memo(function AboutSlide({ about, i }: AboutSlideProps) {
 const FirstSlideContent = memo(function FirstSlideContent({ about }: { about: (typeof about_data)[0] }) {
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 sm:gap-6 mb-5 sm:mb-6">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 mb-5 sm:mb-6">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0F2742]/70 rounded-xl flex items-center justify-center border border-[#1D2A3A]/70">
             <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-200" />
@@ -185,13 +203,13 @@ const FirstSlideContent = memo(function FirstSlideContent({ about }: { about: (t
         </div>
       </div>
       <div className="bg-gradient-to-r from-[#0F2742]/55 to-[#020617]/55 border border-[#1D2A3A]/60 rounded-2xl p-4 sm:p-6">
-        <p className="text-zinc-200/90 italic text-base sm:text-lg text-center">{about.quote}</p>
+        <p className="text-zinc-200/90 italic text-sm sm:text-lg text-center">{about.quote}</p>
       </div>
     </>
   );
 });
 
-export default function About() {
+export default function About({ performanceMode = false }: { performanceMode?: boolean }) {
   const ref = useRef<HTMLElement>(null);
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -266,13 +284,22 @@ export default function About() {
         </div>
 
         <div className="relative w-full flex items-center justify-center">
-          <AnimatePresence initial={false}>
+          {performanceMode ? (
             <AboutSlide
               key={activeSlide}
               about={about_data[activeSlide]}
               i={activeSlide}
+              performanceMode
             />
-          </AnimatePresence>
+          ) : (
+            <AnimatePresence initial={false}>
+              <AboutSlide
+                key={activeSlide}
+                about={about_data[activeSlide]}
+                i={activeSlide}
+              />
+            </AnimatePresence>
+          )}
         </div>
 
         <nav aria-label="Navegación de la sección Sobre mí" className="absolute bottom-10 left-5 top-24 z-20 flex -translate-x-1/2 flex-col justify-between sm:left-10 xl:left-1/2">

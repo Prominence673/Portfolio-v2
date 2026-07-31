@@ -113,6 +113,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-anchor: none;
   }
 
   * {
@@ -131,6 +132,52 @@
 .scene-snap-point {
   visibility: hidden;
 }
+
+html.performance-mode {
+  scroll-behavior: smooth;
+}
+
+html.performance-mode * {
+  cursor: auto !important;
+}
+
+html.performance-mode .performance-heavy {
+  display: none !important;
+}
+
+html.performance-mode .scroll-scene [style*="opacity"] {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+html.performance-mode .scroll-scene [style*="transform"] {
+  transform: none !important;
+  filter: none !important;
+}
+
+html.performance-mode .scroll-scene * {
+  animation: none !important;
+  transition-duration: 160ms !important;
+}
+
+@keyframes legacy-scene-fade {
+  from {
+    opacity: 0.82;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  html.performance-mode .scroll-scene {
+    animation-name: legacy-scene-fade;
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: view();
+    animation-range: entry 4% cover 18%;
+  }
+}
 @keyframes scroll {
   0% {
     transform: translateX(0);
@@ -141,6 +188,12 @@
 }
 *{
   cursor: none;
+}
+
+@media (pointer: coarse) {
+  * {
+    cursor: auto;
+  }
 }
 @keyframes scroll-reverse {
   0% {

@@ -160,7 +160,7 @@ export default function Home() {
         style={{ contain: "layout style" }}
       >
         {/* Decorativos renderizados de forma lazy */}
-        <div className="absolute w-full h-full">
+        <div className="performance-heavy absolute w-full h-full">
           <DecorativeBackground />
         </div>
 

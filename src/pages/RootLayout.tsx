@@ -18,7 +18,7 @@ const Contact = lazy(() => import('@/pages/Contact'));
 const Footer = lazy(() => import('@/components/Footer'));
 const CosmicInterlude = lazy(() => import('@/components/CosmicInterlude'));
 
-export default function RootLayout() {
+export default function RootLayout({ performanceMode, onTogglePerformance }: { performanceMode: boolean; onTogglePerformance: () => void }) {
   const [particlesReady, setParticlesReady] = useState(false);
   const [isAllProjects, setIsAllProjects] = useState(false);
   const location = useLocation();
@@ -32,6 +32,26 @@ export default function RootLayout() {
   useEffect(() => {
     setIsAllProjects(location.pathname === "/all-projects" || location.pathname === "/projects");
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!particlesReady || location.pathname !== "/" || location.hash) return;
+
+    const resetToHome = () => {
+      const previousBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = "auto";
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      window.scrollTo(0, 0);
+      document.documentElement.style.scrollBehavior = previousBehavior;
+    };
+
+    const frame = requestAnimationFrame(resetToHome);
+    const timer = window.setTimeout(resetToHome, 150);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+    };
+  }, [particlesReady, location.pathname, location.hash]);
   
   if (!particlesReady) {
     return <Loading />;
@@ -43,19 +63,19 @@ export default function RootLayout() {
       {!isAllProjects && (
         <>
           <Stars />
-          <Fog />
+          {!performanceMode && <Fog />}
         </>
       )}
       <Suspense fallback={<Loading />}>
-        <Navbar />
+        <Navbar performanceMode={performanceMode} onTogglePerformance={onTogglePerformance} />
         <Home />
-        <About />
-        <CosmicInterlude variant="orbit" />
+        <About performanceMode={performanceMode} />
+        {!performanceMode && <CosmicInterlude variant="orbit" />}
         <Skills />
         <Exp />
-        <CosmicInterlude variant="voyage" />
+        {!performanceMode && <CosmicInterlude variant="voyage" />}
         <Services />
-        <CosmicInterlude variant="singularity" />
+        {!performanceMode && <CosmicInterlude variant="singularity" />}
         <Projects />
         <Contact />
         <Footer />
