@@ -1,6 +1,7 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef, useState, memo } from "react";
 import { Helmet } from 'react-helmet-async';
+import { X } from "lucide-react";
 import { TypingText } from "@/components/Typingtext"
 
 const PDFModal = memo(function PDFModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -8,12 +9,21 @@ const PDFModal = memo(function PDFModal({ isOpen, onClose }: { isOpen: boolean; 
   
   return (
     <div
-      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
       onClick={onClose}
     >
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Cerrar currículum"
+        className="absolute right-4 top-[calc(1rem+env(safe-area-inset-top))] z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-[#020617]/90 text-white shadow-lg backdrop-blur-md lg:right-8 lg:top-8"
+      >
+        <X className="h-5 w-5" />
+      </button>
       <iframe
         src="pdf/CV_Lautaro_Souza.pdf"
-        className="w-[80%] h-[90%] bg-white rounded-lg"
+        title="Curriculum vitae de Lautaro Souza"
+        className="h-[calc(100svh-6rem)] w-[calc(100%-1.5rem)] rounded-xl bg-white lg:h-[90%] lg:w-[80%] lg:rounded-lg"
       />
     </div>
   );
@@ -119,12 +129,44 @@ const DecorativeBackground = memo(function DecorativeBackground() {
   );
 });
 
+/** Un sistema orbital vertical, liviano y separado del decorativo desktop. */
+const MobileDecorativeBackground = memo(function MobileDecorativeBackground() {
+  return (
+    <div aria-hidden="true" className="absolute inset-0 overflow-hidden lg:hidden">
+      <div
+        className="absolute left-1/2 top-[9%] h-[66svh] w-[72vw] max-w-[19rem] rounded-[50%] border border-sky-300/10"
+        style={{ transform: "translateX(-50%) rotate(8deg)" }}
+      />
+      <div className="absolute left-1/2 top-[13%] h-[54svh] w-[54vw] max-w-[14rem] -translate-x-1/2">
+        <div className="ambient-motion mobile-home-orbit absolute inset-0 rounded-[50%] border border-indigo-300/15">
+          <span className="absolute -right-1 top-1/2 h-2 w-2 rounded-full bg-sky-200/70 shadow-[0_0_12px_rgba(125,211,252,0.55)]" />
+        </div>
+      </div>
+      <div
+        className="absolute left-1/2 top-[10%] h-[clamp(7rem,22svh,11rem)] w-[clamp(7rem,22svh,11rem)] -translate-x-1/2 rounded-full"
+        style={{
+          background: "radial-gradient(circle at 34% 28%, #dbeafe 0%, #38bdf8 12%, #0369a1 38%, #082f49 68%, #020617 100%)",
+          boxShadow: "0 0 55px rgba(56,189,248,0.18)",
+        }}
+      >
+        <div className="absolute inset-[16%] rounded-full bg-[radial-gradient(circle_at_42%_38%,rgba(255,255,255,0.2),transparent_45%)]" />
+      </div>
+      <div
+        className="absolute inset-x-0 bottom-0 h-[48%]"
+        style={{ background: "linear-gradient(to top, #020617 24%, rgba(2,6,23,0.88) 52%, transparent 100%)" }}
+      />
+      <div className="absolute left-1/2 top-[8%] h-[78svh] w-px bg-gradient-to-b from-transparent via-sky-300/10 to-transparent" />
+    </div>
+  );
+});
+
 const TECH_STACK = ["React", "TypeScript", "Node.js", "Tailwind"];
 const GREETINGS = ["mundo", "visitante", "futuro cliente"];
 
 export default function Home() {
   const [seePdf, setSeePdf] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const isHomeNearViewport = useInView(sectionRef, { margin: "100% 0px", initial: true });
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -148,26 +190,34 @@ export default function Home() {
       <section
         ref={sectionRef}
         id="home"
-        className="scroll-scene relative flex min-h-screen w-full flex-col overflow-hidden"
+        className="scroll-scene relative flex min-h-[100svh] w-full flex-col overflow-hidden lg:min-h-screen"
         style={{ contain: "layout style" }}
       >
         {/* Decorativos renderizados de forma lazy */}
-        <div className="performance-heavy absolute w-full h-full">
-          <DecorativeBackground />
-        </div>
+        {isHomeNearViewport && (
+          <>
+            <div className="performance-heavy absolute hidden h-full w-full lg:block">
+              <DecorativeBackground />
+            </div>
+            <div className="performance-heavy absolute inset-0 lg:hidden">
+              <MobileDecorativeBackground />
+            </div>
+          </>
+        )}
 
         {/* Nav - sin animación inicial para mejor FCP */}
         <motion.nav
           style={{ y: navY }}
-          className="flex justify-between items-center px-6 sm:px-10 py-5 sm:py-7 z-10"
+          className="z-10 flex items-center justify-between px-5 py-4 lg:px-10 lg:py-7"
         >
           <span className="text-white text-sm font-medium tracking-wide">souz.portfolio</span>
+          <span className="font-mono text-[10px] tracking-[0.22em] text-white/30 lg:hidden">01 / INICIO</span>
         </motion.nav>
 
         {/* Hero content */}
         <motion.div
           style={{ y: heroY, opacity: heroOpacity }}
-          className="flex flex-col justify-center flex-1 px-6 sm:px-12 md:px-20 pb-10 z-10"
+          className="z-10 flex flex-1 flex-col justify-end px-5 pb-[calc(5rem+env(safe-area-inset-bottom))] pt-24 sm:px-10 sm:pb-[calc(6rem+env(safe-area-inset-bottom))] lg:justify-center lg:px-20 lg:pb-10 lg:pt-0"
         >
           <HeroContent setSeePdf={setSeePdf} />
         </motion.div>
@@ -175,7 +225,7 @@ export default function Home() {
         {/* Footer - sin animación inicial para mejor FCP */}
         <motion.div
           style={{ y: footerY }}
-          className="hidden sm:flex justify-between items-end px-6 sm:px-20 pb-8 sm:pb-10 z-10"
+          className="z-10 hidden items-end justify-between lg:flex lg:px-20 lg:pb-10"
         >
           <FooterContent />
         </motion.div>
@@ -192,16 +242,16 @@ const HeroContent = memo(function HeroContent({
 }) {
   return (
     <>
-      <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 w-fit mb-6 sm:mb-8">
+      <div className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-[#020617]/45 px-3 py-1.5 backdrop-blur-sm lg:mb-8 lg:bg-white/5 lg:px-4 lg:backdrop-blur-none">
         <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
         <span className="text-white/50 text-xs">disponible para trabajar</span>
       </div>
 
-      <p className="text-white/35 text-xs tracking-widest uppercase mb-3 sm:mb-4">
+      <p className="mb-2 text-[10px] uppercase tracking-[0.22em] text-white/40 lg:mb-4 lg:text-xs lg:tracking-widest">
         desarrollador full stack
       </p>
 
-      <h1 className="text-4xl sm:text-5xl md:text-7xl font-semibold text-white leading-tight mb-1">
+      <h1 className="mb-1 text-[clamp(2.25rem,10.5vw,3.4rem)] font-semibold leading-[1.02] text-white lg:text-7xl lg:leading-tight">
         Hola, <span className="text-white">
           <TypingText
             text={GREETINGS}
@@ -214,25 +264,39 @@ const HeroContent = memo(function HeroContent({
         .
       </h1>
 
-      <h1 className="text-4xl sm:text-5xl md:text-7xl font-semibold leading-tight mb-5 sm:mb-6 bg-gradient-to-r from-blue-300 to-violet-400 bg-clip-text text-transparent">
+      <h1 className="mb-4 bg-gradient-to-r from-blue-300 to-violet-400 bg-clip-text text-[clamp(2.25rem,10.5vw,3.4rem)] font-semibold leading-[1.02] text-transparent lg:mb-6 lg:text-7xl lg:leading-tight">
         Bienvenido
       </h1>
 
-      <p className="text-white/45 text-sm sm:text-base max-w-md leading-relaxed mb-8 sm:mb-10">
+      <p className="mb-5 max-w-md text-[13px] leading-relaxed text-white/55 sm:text-sm lg:mb-10 lg:text-base lg:text-white/45">
         Construyo experiencias digitales limpias y funcionales. 
         Especializado en React, Node.js y diseño de interfaces modernas.
       </p>
 
-      <div className="flex gap-3 items-center">
+      <div className="flex w-full max-w-md flex-col gap-2.5 sm:flex-row sm:items-center lg:gap-3">
         <button
           onClick={() => setSeePdf(true)}
-          className="w-36 sm:w-40 h-10 sm:h-12 bg-[#0F2742] text-white text-sm rounded-full border border-[#1D2A3A]/70 transition-all hover:scale-105 active:scale-100"
+          className="h-11 w-full rounded-full border border-[#1D2A3A]/70 bg-[#0F2742] text-sm text-white transition-all hover:scale-[1.02] active:scale-[0.99] sm:w-40 lg:h-12 lg:hover:scale-105 lg:active:scale-100"
         >
           Ver cv
         </button>
-        <button className="text-white/60 border border-white/15 rounded-full px-5 sm:px-6 py-2.5 text-sm hover:border-white/40 hover:text-white transition-all hover:scale-105 active:scale-100">
+        <a
+          href="#contact"
+          className="flex h-11 w-full items-center justify-center rounded-full border border-white/15 px-5 text-sm text-white/60 transition-all hover:border-white/40 hover:text-white active:scale-[0.99] sm:w-auto sm:px-6 lg:h-auto lg:py-2.5 lg:hover:scale-105 lg:active:scale-100"
+        >
           Contactarme
-        </button>
+        </a>
+      </div>
+
+      <div className="mt-4 flex max-w-md items-center gap-2 overflow-hidden lg:hidden">
+        <span className="h-px min-w-5 flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+        <div className="flex flex-wrap justify-end gap-1.5">
+          {TECH_STACK.map((technology) => (
+            <span key={technology} className="rounded-full border border-white/10 bg-[#020617]/35 px-2 py-1 text-[9px] tracking-wide text-white/40">
+              {technology}
+            </span>
+          ))}
+        </div>
       </div>
     </>
   );

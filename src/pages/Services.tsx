@@ -1,7 +1,6 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, useInView, useScroll, motion, useMotionValueEvent } from "framer-motion";
 import { Zap, Code, Smartphone, Cpu, CardSim } from "lucide-react";
-import { ScrollReveal } from "@/components/ScrollReveal";
 import { Helmet } from 'react-helmet-async';
 import { useQueuedScene } from "@/lib/useQueuedScene";
 
@@ -53,6 +52,21 @@ const services: Service[] = [
     gradient: "from-[#020617] to-[#05103d]",
   },
 ];
+
+function useDesktopLayout() {
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches
+  );
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)");
+    const updateLayout = () => setIsDesktop(media.matches);
+    media.addEventListener("change", updateLayout);
+    return () => media.removeEventListener("change", updateLayout);
+  }, []);
+
+  return isDesktop;
+}
 
 function ActiveServicePanel({ service, index, performanceMode = false }: { service: Service; index: number; performanceMode?: boolean }) {
   return (
@@ -142,50 +156,75 @@ function ServiceList({ activeIndex }: { activeIndex: number }) {
   );
 }
 
-function MobileServiceCard({ service }: { service: Service }) {
+function MobileServiceCard({
+  service,
+  index,
+  performanceMode,
+}: {
+  service: Service;
+  index: number;
+  performanceMode: boolean;
+}) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="relative p-6 rounded-2xl border border-[#1D2A3A]/50 bg-[#020617]/50 backdrop-blur-sm hover:border-[#1D2A3A]/80 transition-all duration-300"
+    <motion.article
+      initial={performanceMode ? false : { opacity: 0.25, y: 42 }}
+      whileInView={performanceMode ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={performanceMode ? { duration: 0 } : { duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      className="relative min-h-[68svh] overflow-hidden rounded-[1.75rem] border border-[#1D2A3A]/70 bg-[#030b19]/90 px-5 py-6 shadow-[0_24px_70px_rgba(0,0,0,0.26)] sm:min-h-[34rem] sm:px-7 sm:py-8"
     >
-      {/* Gradiente de fondo */}
       <div
-        className={`absolute top-0 right-0 w-64 h-64 bg-gradient-to-br ${service.gradient} opacity-10 rounded-full blur-3xl pointer-events-none`}
+        className="pointer-events-none absolute inset-0 opacity-70"
+        style={{
+          background:
+            "radial-gradient(circle at 88% 4%, rgba(14,165,233,0.13), transparent 35%), linear-gradient(155deg, rgba(7,20,38,0.82), rgba(2,6,23,0.94) 58%, rgba(0,0,0,0.88))",
+        }}
       />
-
-
-      {/* Línea decorativa superior */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0ea5e9]/50 to-transparent" />
-
-      {/* Icono */}
-      <div
-        className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${service.gradient} text-white mb-4`}
-      >
-        {service.icon}
+      <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#7dd3fc]/80 to-transparent" />
+      <div className="pointer-events-none absolute -right-5 top-10 font-mono text-[7.5rem] font-bold leading-none text-white/[0.025]">
+        {String(index + 1).padStart(2, "0")}
       </div>
 
-      {/* Contenido */}
-      <div className="relative z-10">
-        <h3 className={`text-lg sm:text-xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r ${service.gradient}`}>
-          {service.title}
-        </h3>
-
-        <p className="text-zinc-300/90 text-sm leading-relaxed mb-4">
-          {service.description}
-        </p>
-
-        {/* Tecnologías */}
+      <div className="relative z-10 flex min-h-[calc(68svh-3rem)] flex-col sm:min-h-[30rem]">
         <div>
-          <h4 className="text-xs font-semibold text-white/60 uppercase tracking-widest mb-2">
-            Stack
-          </h4>
-          <div className="flex flex-wrap gap-1.5">
-            {service.technologies.map((tech, idx) => (
+          <div className="mb-8 flex items-center justify-between">
+            <div className={`inline-flex rounded-2xl border border-[#1D2A3A]/80 bg-gradient-to-br ${service.gradient} p-3.5 text-[#bae6fd] shadow-[0_0_30px_rgba(14,165,233,0.08)] [&_svg]:h-7 [&_svg]:w-7`}>
+              {service.icon}
+            </div>
+            <div className="text-right">
+              <span className="block font-mono text-2xl font-semibold text-white/80">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <span className="font-mono text-[9px] tracking-[0.24em] text-[#7dd3fc]/55">
+                DE {String(services.length).padStart(2, "0")}
+              </span>
+            </div>
+          </div>
+
+          <p className="mb-3 font-mono text-[10px] tracking-[0.24em] text-[#7dd3fc]/65">
+            CAPACIDAD DIGITAL
+          </p>
+          <h3 className="max-w-sm text-2xl font-bold leading-tight text-white sm:text-3xl">
+            {service.title}
+          </h3>
+
+          <p className="mt-5 text-sm leading-7 text-zinc-300/80 sm:text-[0.95rem]">
+            {service.description}
+          </p>
+        </div>
+
+        <div className="mt-auto border-t border-white/[0.07] pt-5">
+          <div className="mb-3 flex items-center justify-between">
+            <h4 className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/40">
+              Tecnologías
+            </h4>
+            <span className="h-px w-10 bg-gradient-to-r from-[#7dd3fc]/50 to-transparent" />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {service.technologies.map((tech) => (
               <span
-                key={idx}
-                className={`px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${service.gradient} text-white/90 border border-[#1D2A3A]/50 backdrop-blur-sm`}
+                key={tech}
+                className="rounded-full border border-[#1D2A3A]/80 bg-[#08172a]/75 px-3 py-1.5 text-xs font-medium text-zinc-200"
               >
                 {tech}
               </span>
@@ -193,12 +232,13 @@ function MobileServiceCard({ service }: { service: Service }) {
           </div>
         </div>
       </div>
-    </motion.div>
+    </motion.article>
   );
 }
 
 export default function Services({ performanceMode = false }: { performanceMode?: boolean }) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
+  const isDesktop = useDesktopLayout();
   const isNearViewport = useInView(ref, { margin: "75% 0px" });
   const nearViewportRef = useRef(isNearViewport);
   nearViewportRef.current = isNearViewport;
@@ -207,8 +247,8 @@ export default function Services({ performanceMode = false }: { performanceMode?
     handleExitComplete,
     queueScene,
   } = useQueuedScene({
-    animated: !performanceMode,
-    isNearViewport,
+    animated: isDesktop && !performanceMode,
+    isNearViewport: isDesktop && isNearViewport,
   });
 
   const { scrollYProgress } = useScroll({
@@ -217,6 +257,8 @@ export default function Services({ performanceMode = false }: { performanceMode?
   });
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (!isDesktop) return;
+
     const nextIndex = Math.min(
       Math.floor(latest * services.length),
       services.length - 1
@@ -231,13 +273,13 @@ export default function Services({ performanceMode = false }: { performanceMode?
         <meta name="description" content="Servicios de desarrollo: aplicaciones web, móvil y de escritorio, automatización e integración de IA. Soluciones personalizadas con enfoque en rendimiento y UX." />
         <link rel="canonical" href="https://portfoliov2-prominence.netlify.app/services" />
       </Helmet>
-      {/* Versión Desktop */}
-      <section
-        ref={ref}
-        id="services"
-        style={{ height: `calc(100vh + ${(services.length - 1) * 80}vh)` }}
-        className="scroll-scene relative hidden lg:block"
-      >
+      <div ref={ref} id="services">
+      {isDesktop ? (
+        /* Versión Desktop */
+        <section
+          style={{ height: `calc(100vh + ${(services.length - 1) * 80}vh)` }}
+          className="scroll-scene relative"
+        >
         <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute inset-0 pointer-events-none">
@@ -280,47 +322,73 @@ export default function Services({ performanceMode = false }: { performanceMode?
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Versión Mobile */}
-      <section
-        id="services"
-        className="scroll-scene relative lg:hidden min-h-screen py-20 w-full"
-      >
-        {/* Header */}
-        <ScrollReveal
-          y={24}
-          className="text-center mb-12 w-full max-w-3xl mx-auto px-6"
-          scrollYProgress={scrollYProgress}
-          range={[0, 0.3]}
+        </section>
+      ) : (
+        /* Versión Mobile */
+        <section
+          className="mobile-safe-section scroll-scene relative min-h-[100svh] w-full overflow-hidden py-20"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#020617]/70 border border-[#1D2A3A]/60 text-zinc-200 text-sm mb-4">
-            <CardSim className="w-4 h-4" />
-            Servicios
+        <motion.header
+          initial={performanceMode ? false : { opacity: 0, y: 30 }}
+          whileInView={performanceMode ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={performanceMode ? { duration: 0 } : { duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-10 mx-auto flex min-h-[58svh] w-full max-w-2xl flex-col justify-end px-6 pb-14 pt-8 sm:min-h-[32rem] sm:px-8"
+        >
+          <div className="mb-7 flex items-center gap-3">
+            <span className="font-mono text-[10px] tracking-[0.28em] text-[#7dd3fc]/70">05</span>
+            <span className="h-px flex-1 bg-gradient-to-r from-[#7dd3fc]/55 to-transparent" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#1D2A3A]/70 bg-[#020617]/75 px-3.5 py-2 text-xs text-zinc-200">
+              <CardSim className="h-4 w-4" />
+              Servicios
+            </div>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 text-white">
+          <p className="mb-3 font-mono text-[10px] tracking-[0.25em] text-white/35">SOLUCIONES A MEDIDA</p>
+          <h2 className="max-w-md text-4xl font-bold leading-[1.08] text-white sm:text-5xl">
             Soluciones Personalizadas
           </h2>
-          <p className="text-base sm:text-lg text-zinc-200/90 max-w-2xl mx-auto">
-            Transformo ideas en realidad con tecnología moderna.
+          <p className="mt-5 max-w-md text-sm leading-7 text-zinc-300/75 sm:text-base">
+            Transformo ideas en productos digitales con tecnología moderna, una dirección clara y atención por cada detalle.
           </p>
-        </ScrollReveal>
+          <div className="mt-9 flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-white/30">
+            <span className="h-8 w-px bg-gradient-to-b from-[#7dd3fc]/70 to-transparent" />
+            Deslizá para explorar
+          </div>
+        </motion.header>
 
-        {/* Decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 left-10 w-48 h-48 bg-white/5 rounded-full blur-3xl opacity-20" />
-          <div className="absolute bottom-20 right-10 w-56 h-56 bg-[#05103d]/30 rounded-full blur-3xl opacity-20" />
+          <div className="absolute left-0 top-[12rem] h-px w-32 bg-gradient-to-r from-[#7dd3fc]/20 to-transparent" />
+          <div className="absolute right-0 top-[42rem] h-px w-28 bg-gradient-to-l from-[#818cf8]/20 to-transparent" />
         </div>
 
-        {/* Services Grid */}
-        <div className="w-full max-w-5xl mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            {services.map((service) => (
-              <MobileServiceCard key={service.id} service={service} />
+        <div className="relative z-10 mx-auto w-full max-w-2xl px-4 sm:px-8">
+          <div className="relative space-y-10 pb-10">
+            <div className="absolute bottom-10 left-[1.1rem] top-6 w-px bg-gradient-to-b from-[#7dd3fc]/60 via-[#1D2A3A]/80 to-transparent" />
+            {services.map((service, index) => (
+              <div key={service.id} className="relative grid grid-cols-[2.25rem_minmax(0,1fr)] gap-3 sm:gap-5">
+                <div className="relative z-10 pt-7">
+                  <motion.span
+                    initial={performanceMode ? false : { scale: 0.65, opacity: 0 }}
+                    whileInView={performanceMode ? undefined : { scale: 1, opacity: 1 }}
+                    viewport={{ once: true, amount: 0.5 }}
+                    transition={performanceMode ? { duration: 0 } : { duration: 0.45, delay: 0.08, ease: "easeOut" }}
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-[#7dd3fc]/45 bg-[#051225] font-mono text-[10px] text-[#bae6fd] shadow-[0_0_20px_rgba(14,165,233,0.1)]"
+                  >
+                    {String(index + 1).padStart(2, "0")}
+                  </motion.span>
+                </div>
+                <MobileServiceCard
+                  service={service}
+                  index={index}
+                  performanceMode={performanceMode}
+                />
+              </div>
             ))}
           </div>
         </div>
-      </section>
+        </section>
+      )}
+      </div>
     </>
   );
 }
