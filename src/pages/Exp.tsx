@@ -1,14 +1,16 @@
 import { Clock, Users } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import {
   AnimatePresence,
   motion,
+  useInView,
   useMotionValueEvent,
   useScroll,
   useSpring,
-  useTransform,
 } from "framer-motion";
+import { getFastScrolling, useFastScrolling } from "@/lib/scrollActivity";
+import { useQueuedScene } from "@/lib/useQueuedScene";
 
 const experiences = [
   {
@@ -43,25 +45,48 @@ const experiences = [
 
 const TOTAL_EXPERIENCES = experiences.length;
 
-export default function Exp() {
+export default function Exp({ performanceMode = false }: { performanceMode?: boolean }) {
   const ref = useRef<HTMLElement>(null);
-  const [activeExperience, setActiveExperience] = useState(0);
+  const isNearViewport = useInView(ref, { margin: "75% 0px" });
+  const nearViewportRef = useRef(isNearViewport);
+  const fastScrolling = useFastScrolling();
+  nearViewportRef.current = isNearViewport;
+  const {
+    activeIndex: activeExperience,
+    handleExitComplete,
+    queueScene,
+  } = useQueuedScene({
+    animated: !performanceMode,
+    isNearViewport,
+  });
 
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
   });
 
-  const rawLineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const lineScale = useSpring(rawLineScale, { stiffness: 80, damping: 24, mass: 0.35 });
+  const lineScale = useSpring(scrollYProgress.get(), { stiffness: 80, damping: 24, mass: 0.35 });
 
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    const isFast = getFastScrolling();
+    if (isFast || !nearViewportRef.current) {
+      lineScale.jump(latest);
+    } else {
+      lineScale.set(latest);
+    }
+
     const next = Math.min(
       Math.floor(latest * TOTAL_EXPERIENCES),
       TOTAL_EXPERIENCES - 1
     );
-    setActiveExperience((current) => current === next ? current : next);
+    queueScene(next, !nearViewportRef.current);
   });
+
+  useEffect(() => {
+    if (fastScrolling || !isNearViewport) {
+      lineScale.jump(scrollYProgress.get());
+    }
+  }, [fastScrolling, isNearViewport, lineScale, scrollYProgress]);
 
   const goToExperience = (index: number) => {
     if (!ref.current) return;
@@ -148,13 +173,17 @@ export default function Exp() {
               </nav>
 
               <div className="flex min-h-[21rem] items-center sm:min-h-[25rem]">
-                <AnimatePresence initial={false}>
+                <AnimatePresence
+                  initial={false}
+                  presenceAffectsLayout={false}
+                  onExitComplete={handleExitComplete}
+                >
                   <motion.article
                     key={experience.title}
-                    initial={{ opacity: 0, x: 16, filter: "blur(3px)" }}
-                    animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, x: -12, filter: "blur(2px)" }}
-                    transition={{ duration: 0.68, ease: [0.16, 1, 0.3, 1] }}
+                    initial={performanceMode ? false : { opacity: 0, x: 16, filter: "blur(3px)" }}
+                    animate={performanceMode ? { opacity: 1 } : { opacity: 1, x: 0, filter: "blur(0px)" }}
+                    exit={performanceMode ? undefined : { opacity: 0, x: -12, filter: "blur(2px)" }}
+                    transition={performanceMode ? { duration: 0 } : { duration: 0.68, ease: [0.16, 1, 0.3, 1] }}
                     className="absolute inset-y-0 left-7 right-0 flex flex-col justify-center overflow-hidden rounded-2xl border border-[#1D2A3A]/70 bg-gradient-to-br from-[#071426]/90 via-[#020617]/88 to-black/80 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:left-14 sm:rounded-[2rem] sm:p-10"
                   >
                     <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#7dd3fc]/80 to-transparent" />

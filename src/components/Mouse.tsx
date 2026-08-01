@@ -1,67 +1,71 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export default function CustomCursor() {
-  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const pointerX = useMotionValue(-100);
+  const pointerY = useMotionValue(-100);
+  const smoothX = useSpring(pointerX, { stiffness: 400, damping: 30 });
+  const smoothY = useSpring(pointerY, { stiffness: 400, damping: 30 });
   const [mouseClicked, setMouseClicked] = useState(false);
 
   useEffect(() => {
     const up = () => setMouseClicked(false);
     const down = () => setMouseClicked(true);
-
-    window.addEventListener("mouseup", up);
-    window.addEventListener("mousedown", down);
-
-    const move = (e: MouseEvent) => {
-      setPos({ x: e.clientX, y: e.clientY });
+    const move = (event: PointerEvent) => {
+      pointerX.set(event.clientX);
+      pointerY.set(event.clientY);
     };
 
-    window.addEventListener("mousemove", move);
+    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("pointerup", up, { passive: true });
+    window.addEventListener("pointerdown", down, { passive: true });
+
     return () => {
-    window.removeEventListener("mousemove", move);         
-    window.removeEventListener("mouseup", up);
-    window.removeEventListener("mousedown", down);
-    }
-  }, []);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointerdown", down);
+    };
+  }, [pointerX, pointerY]);
 
   return (
     <>
-    <motion.div
-      animate={{
-        x: "-50%",
-        y: "-50%",  
-        scale: mouseClicked ? 1.5 : 1 }}       
-      style={{
-        top: pos.y, 
-        left: pos.x,
-        position: "fixed",
-        width: 10,
-        height: 10,
-        borderRadius: "50%",
-        background: "white",
-        pointerEvents: "none",
-        zIndex: 9999,
-      }}/>
-    <motion.div
-      animate={{    
-        x: "-50%",
-        y: "-50%",
-        rotate: 45, 
-        top: pos.y, 
-        left: pos.x
-      }}
-      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      style={{
-        position: "fixed",
-        width: 20,
-        height: 20,
-        borderRadius: "0",
-        background: "none",
-        border: "1px solid white",
-        pointerEvents: "none",
-        zIndex: 9999,
-      }}
-    />
+      <motion.div
+        animate={{ scale: mouseClicked ? 1.5 : 1 }}
+        style={{
+          x: pointerX,
+          y: pointerY,
+          position: "fixed",
+          top: 0,
+          left: 0,
+          marginLeft: -5,
+          marginTop: -5,
+          width: 10,
+          height: 10,
+          borderRadius: "50%",
+          background: "white",
+          pointerEvents: "none",
+          zIndex: 9999,
+          willChange: "transform",
+        }}
+      />
+      <motion.div
+        style={{
+          x: smoothX,
+          y: smoothY,
+          rotate: 45,
+          position: "fixed",
+          top: 0,
+          left: 0,
+          marginLeft: -10,
+          marginTop: -10,
+          width: 20,
+          height: 20,
+          border: "1px solid white",
+          pointerEvents: "none",
+          zIndex: 9999,
+          willChange: "transform",
+        }}
+      />
     </>
   );
 }

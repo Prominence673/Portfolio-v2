@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useState, memo, useEffect } from "react";
+import { useRef, useState, memo } from "react";
 import { Helmet } from 'react-helmet-async';
 import { TypingText } from "@/components/Typingtext"
 
@@ -112,8 +112,7 @@ const DecorativeBackground = memo(function DecorativeBackground() {
       <div 
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-32 rounded-full blur-lg opacity-20"
         style={{ 
-          background: "linear-gradient(90deg, transparent, rgba(14,165,233,0.5), transparent)",
-          willChange: "filter"
+          background: "linear-gradient(90deg, transparent, rgba(14,165,233,0.5), transparent)"
         }}
       />
     </div>
@@ -121,23 +120,16 @@ const DecorativeBackground = memo(function DecorativeBackground() {
 });
 
 const TECH_STACK = ["React", "TypeScript", "Node.js", "Tailwind"];
+const GREETINGS = ["mundo", "visitante", "futuro cliente"];
 
 export default function Home() {
   const [seePdf, setSeePdf] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-  const [enableAnimations, setEnableAnimations] = useState(false);
-  
-  // Solo inicializar scroll animations después de que LCP haya pasado
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
-
-  useEffect(() => {
-    // Habilitar animaciones scroll después de un delay para no afectar LCP
-    const timer = setTimeout(() => setEnableAnimations(true), 800);
-    return () => clearTimeout(timer);
-  }, []);
 
   const heroY = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.75, 1], [1, 1, 0.55]);
@@ -165,46 +157,28 @@ export default function Home() {
         </div>
 
         {/* Nav - sin animación inicial para mejor FCP */}
-        {enableAnimations ? (
-          <motion.nav
-            style={{ y: navY }}
-            className="flex justify-between items-center px-6 sm:px-10 py-5 sm:py-7 z-10"
-          >
-            <span className="text-white text-sm font-medium tracking-wide">souz.portfolio</span>
-          </motion.nav>
-        ) : (
-          <nav className="flex justify-between items-center px-6 sm:px-10 py-5 sm:py-7 z-10">
-            <span className="text-white text-sm font-medium tracking-wide">souz.portfolio</span>
-          </nav>
-        )}
+        <motion.nav
+          style={{ y: navY }}
+          className="flex justify-between items-center px-6 sm:px-10 py-5 sm:py-7 z-10"
+        >
+          <span className="text-white text-sm font-medium tracking-wide">souz.portfolio</span>
+        </motion.nav>
 
         {/* Hero content */}
-        {enableAnimations ? (
-          <motion.div
-            style={{ y: heroY, opacity: heroOpacity }}
-            className="flex flex-col justify-center flex-1 px-6 sm:px-12 md:px-20 pb-10 z-10"
-          >
-            <HeroContent setSeePdf={setSeePdf} />
-          </motion.div>
-        ) : (
-          <div className="flex flex-col justify-center flex-1 px-6 sm:px-12 md:px-20 pb-10 z-10">
-            <HeroContent setSeePdf={setSeePdf} />
-          </div>
-        )}
+        <motion.div
+          style={{ y: heroY, opacity: heroOpacity }}
+          className="flex flex-col justify-center flex-1 px-6 sm:px-12 md:px-20 pb-10 z-10"
+        >
+          <HeroContent setSeePdf={setSeePdf} />
+        </motion.div>
 
         {/* Footer - sin animación inicial para mejor FCP */}
-        {enableAnimations ? (
-          <motion.div
-            style={{ y: footerY }}
-            className="hidden sm:flex justify-between items-end px-6 sm:px-20 pb-8 sm:pb-10 z-10"
-          >
-            <FooterContent />
-          </motion.div>
-        ) : (
-          <div className="hidden sm:flex justify-between items-end px-6 sm:px-20 pb-8 sm:pb-10 z-10">
-            <FooterContent />
-          </div>
-        )}
+        <motion.div
+          style={{ y: footerY }}
+          className="hidden sm:flex justify-between items-end px-6 sm:px-20 pb-8 sm:pb-10 z-10"
+        >
+          <FooterContent />
+        </motion.div>
       </section>
     </>
   );
@@ -230,7 +204,7 @@ const HeroContent = memo(function HeroContent({
       <h1 className="text-4xl sm:text-5xl md:text-7xl font-semibold text-white leading-tight mb-1">
         Hola, <span className="text-white">
           <TypingText
-            text={["mundo", "visitante", "futuro cliente"]}
+            text={GREETINGS}
             speed={65}
             deleteSpeed={35}
             pauseTime={1000}

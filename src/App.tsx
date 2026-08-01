@@ -25,15 +25,30 @@ function App() {
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
-    let animationFrame: number;
+    let animationFrame = 0;
     const raf = (time: number) =>  {
+      animationFrame = 0;
       lenis.raf(time);
-      animationFrame = requestAnimationFrame(raf);
+      if (!document.hidden) animationFrame = requestAnimationFrame(raf);
     }
-    animationFrame = requestAnimationFrame(raf);
+    const startRaf = () => {
+      if (!animationFrame && !document.hidden) animationFrame = requestAnimationFrame(raf);
+    };
+    const handleVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+      } else {
+        startRaf();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    startRaf();
 
     return () => {
       cancelAnimationFrame(animationFrame);
+      document.removeEventListener('visibilitychange', handleVisibility);
       lenis.destroy();
     };
   }, [performanceMode]);

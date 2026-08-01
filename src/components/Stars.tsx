@@ -1,10 +1,14 @@
 import Particles from "@tsparticles/react";
 import React ,{ useMemo } from "react";
+import { useParticlesScrollPause } from "@/lib/useParticlesScrollPause";
 
 const Stars = () => {
+  const particlesLoaded = useParticlesScrollPause();
   const options = useMemo(() => ({
     fullScreen: { enable: true },
     background: { color: "transparent" },
+    fpsLimit: 60,
+    pauseOnBlur: false,
 
     particles: {
       number: { value: 30 },
@@ -42,6 +46,7 @@ const Stars = () => {
     <Particles
       id="stars"
       options={options}
+      particlesLoaded={particlesLoaded}
       style={{
         position: "absolute",
         inset: 0,

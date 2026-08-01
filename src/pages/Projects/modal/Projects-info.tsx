@@ -105,6 +105,7 @@ export default function ProjectsInfo() {
                       key={currentImageIndex}
                       src={project.images[currentImageIndex]}
                       alt={`${project.title} screenshot ${currentImageIndex + 1}`}
+                      decoding="async"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
@@ -179,6 +180,8 @@ export default function ProjectsInfo() {
                         <img
                           src={img}
                           alt={`Thumbnail ${index + 1}`}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover"
                         />
                       </motion.button>
@@ -292,6 +295,7 @@ export default function ProjectsInfo() {
                       key={fullscreenIndex}
                       src={project!.images[fullscreenIndex]}
                       alt={`${project!.title} fullscreen`}
+                      decoding="async"
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.95 }}

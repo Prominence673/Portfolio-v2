@@ -1,22 +1,62 @@
 import Particles from "@tsparticles/react";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import type { ISourceOptions } from "@tsparticles/engine";
+import { useParticlesScrollPause } from "@/lib/useParticlesScrollPause";
+
+const getParticleCount = () => {
+  if (typeof window === "undefined") return 20;
+
+  const viewportArea = window.innerWidth * window.innerHeight;
+  const referenceArea = 1920 * 1080;
+
+  // Replica la densidad anterior, pero evita tanto el exceso en 4K como
+  // un mínimo artificialmente caro en pantallas chicas.
+  return Math.min(
+    28,
+    Math.max(4, Math.round(20 * 1.44 * (viewportArea / referenceArea))),
+  );
+};
 
 const Fog = () => {
+  const particlesLoaded = useParticlesScrollPause();
+  const [particleCount, setParticleCount] = useState(getParticleCount);
 
-  const options: ISourceOptions = useMemo(() => ({
+  useEffect(() => {
+    let resizeTimer: number | undefined;
+
+    const handleResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        setParticleCount((current) => {
+          const next = getParticleCount();
+          return current === next ? current : next;
+        });
+      }, 220);
+    };
+
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.clearTimeout(resizeTimer);
+    };
+  }, []);
+
+  const options = useMemo<ISourceOptions>(() => ({
     fullScreen: { enable: false },
 
     background: {
-      color: { value: "transparent" }
+      color: { value: "transparent" },
     },
 
-    fpsLimit: 60,
+    fpsLimit: 30,
+    // La pausa por visibilidad y por scroll se centraliza en el hook para no
+    // crear dos ciclos RAF al volver a la pestaña.
+    pauseOnBlur: false,
 
     particles: {
       number: {
-        value: 20,
-        density: { enable: true },
+        value: particleCount,
+        density: { enable: false },
       },
 
       color: {
@@ -24,7 +64,7 @@ const Fog = () => {
       },
 
       shape: {
-        type: "circle"
+        type: "circle",
       },
 
       opacity: {
@@ -64,38 +104,41 @@ const Fog = () => {
     },
 
     links: {
-      enable: false
+      enable: false,
     },
 
-    detectRetina: true,
+    // El blur de 60px vuelve indistinguible el supersampling Retina y evita
+    // renderizar un canvas fijo de fondo a 2x/3x resolución.
+    detectRetina: false,
 
     interactivity: {
       events: {
         onHover: {
-          enable: false
-        }
-      }
+          enable: false,
+        },
+      },
     },
-
-  }), []);
+  }), [particleCount]);
 
   return (
     <div
       style={{
         filter: "blur(60px)",
         position: "fixed",
-        inset: "-10%",
+        inset: "-72px",
         zIndex: 0,
         pointerEvents: "none",
+        contain: "strict",
       }}
     >
       <Particles
         id="fog"
         style={{ position: "absolute", inset: 0 }}
         options={options}
+        particlesLoaded={particlesLoaded}
       />
     </div>
   );
-}
+};
 
 export default React.memo(Fog);

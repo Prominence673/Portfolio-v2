@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 
@@ -18,63 +17,46 @@ const Contact = lazy(() => import('@/pages/Contact'));
 const Footer = lazy(() => import('@/components/Footer'));
 const CosmicInterlude = lazy(() => import('@/components/CosmicInterlude'));
 
+let particlesEnginePromise: Promise<void> | null = null;
+
+function ensureParticlesEngine() {
+  if (!particlesEnginePromise) {
+    particlesEnginePromise = initParticlesEngine(async (engine) => {
+      await loadSlim(engine);
+    });
+  }
+  return particlesEnginePromise;
+}
+
 export default function RootLayout({ performanceMode, onTogglePerformance }: { performanceMode: boolean; onTogglePerformance: () => void }) {
   const [particlesReady, setParticlesReady] = useState(false);
-  const [isAllProjects, setIsAllProjects] = useState(false);
-  const location = useLocation();
+
   useEffect(() => {
-    initParticlesEngine(async (engine) => {
-      await loadSlim(engine);
-    }).then(() => {
-      setParticlesReady(true);
+    let active = true;
+    ensureParticlesEngine().then(() => {
+      if (active) setParticlesReady(true);
     });
-  }, []);
-  useEffect(() => {
-    setIsAllProjects(location.pathname === "/all-projects" || location.pathname === "/projects");
-  }, [location.pathname]);
 
-  useEffect(() => {
-    if (!particlesReady || location.pathname !== "/" || location.hash) return;
-
-    const resetToHome = () => {
-      const previousBehavior = document.documentElement.style.scrollBehavior;
-      document.documentElement.style.scrollBehavior = "auto";
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      window.scrollTo(0, 0);
-      document.documentElement.style.scrollBehavior = previousBehavior;
-    };
-
-    const frame = requestAnimationFrame(resetToHome);
-    const timer = window.setTimeout(resetToHome, 150);
     return () => {
-      cancelAnimationFrame(frame);
-      clearTimeout(timer);
+      active = false;
     };
-  }, [particlesReady, location.pathname, location.hash]);
-  
-  if (!particlesReady) {
-    return <Loading />;
-  }
+  }, []);
   
   return (
     <div className="min-h-screen w-full text-white app-gradient">
-      {/* One Page Style */}
-      {!isAllProjects && (
-        <>
-          <Stars />
-          {!performanceMode && <Fog />}
-        </>
-      )}
+      <Suspense fallback={null}>
+        {particlesReady && <Stars />}
+        {particlesReady && !performanceMode && <Fog />}
+      </Suspense>
       <Suspense fallback={<Loading />}>
         <Navbar performanceMode={performanceMode} onTogglePerformance={onTogglePerformance} />
         <Home />
         <About performanceMode={performanceMode} />
         {!performanceMode && <CosmicInterlude variant="orbit" />}
         <Skills />
-        <Exp />
+        <Exp performanceMode={performanceMode} />
         {!performanceMode && <CosmicInterlude variant="voyage" />}
-        <Services />
+        <Services performanceMode={performanceMode} />
         {!performanceMode && <CosmicInterlude variant="singularity" />}
         <Projects />
         <Contact />

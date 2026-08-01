@@ -62,7 +62,6 @@ function ContactWizard() {
               onChange={(event) => setForm({ ...form, [current.key]: event.target.value })}
               placeholder={current.placeholder}
               rows={4}
-              autoFocus
               className="w-full resize-none rounded-xl border border-[#1D2A3A]/70 bg-black/25 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-white/25 focus:border-[#7dd3fc]/55"
             />
           ) : (
@@ -71,7 +70,6 @@ function ContactWizard() {
               value={value}
               onChange={(event) => setForm({ ...form, [current.key]: event.target.value })}
               placeholder={current.placeholder}
-              autoFocus
               className="w-full rounded-xl border border-[#1D2A3A]/70 bg-black/25 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-white/25 focus:border-[#7dd3fc]/55"
             />
           )}

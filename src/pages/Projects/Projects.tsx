@@ -2,7 +2,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { Helmet } from 'react-helmet-async';
 import { Palette, ArrowRight } from "lucide-react";
 import { useScroll, motion } from "framer-motion";
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import type { Project } from "@/pages/Projects/interface/Projects-interface";
 import { useNavigate } from "react-router-dom";
 import { allProjects } from "./data/projectsData";
@@ -29,7 +29,6 @@ export default function Projects() {
     target: ref,
     offset: ["start 0.9", "start 0.1"]
   });
-  const [showDetails, setShowDetails] = useState(false);
   return (
     <>
       <Helmet>
@@ -63,8 +62,6 @@ export default function Projects() {
               key={index}
               {...project}
               index={index}
-              state={showDetails}
-              setState={setShowDetails}
             />
           ))}
         </div>
@@ -88,8 +85,6 @@ interface ProjectCardProps {
   github: string;
   demo: string;
   index: number;
-  state: boolean;
-  setState: (value: boolean) => void;
 }
 
 function ProjectCard({
@@ -114,6 +109,8 @@ function ProjectCard({
         <img
           src={image}
           alt={title}
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/50 to-transparent/10 opacity-90 group-hover:opacity-100 transition-opacity duration-500"></div>

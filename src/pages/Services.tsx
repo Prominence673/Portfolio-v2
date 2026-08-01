@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
-import { AnimatePresence, useScroll, motion, useMotionValueEvent } from "framer-motion";
+import { useRef } from "react";
+import { AnimatePresence, useInView, useScroll, motion, useMotionValueEvent } from "framer-motion";
 import { Zap, Code, Smartphone, Cpu, CardSim } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Helmet } from 'react-helmet-async';
+import { useQueuedScene } from "@/lib/useQueuedScene";
 
 interface Service {
   id: number;
@@ -53,14 +54,14 @@ const services: Service[] = [
   },
 ];
 
-function ActiveServicePanel({ service, index }: { service: Service; index: number }) {
+function ActiveServicePanel({ service, index, performanceMode = false }: { service: Service; index: number; performanceMode?: boolean }) {
   return (
     <motion.div
       key={service.id}
-      initial={{ opacity: 0, x: 16, filter: "blur(3px)" }}
-      animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-      exit={{ opacity: 0, x: -12, filter: "blur(2px)" }}
-      transition={{ duration: 0.68, ease: [0.16, 1, 0.3, 1] }}
+      initial={performanceMode ? false : { opacity: 0, x: 16, filter: "blur(3px)" }}
+      animate={performanceMode ? { opacity: 1 } : { opacity: 1, x: 0, filter: "blur(0px)" }}
+      exit={performanceMode ? undefined : { opacity: 0, x: -12, filter: "blur(2px)" }}
+      transition={performanceMode ? { duration: 0 } : { duration: 0.68, ease: [0.16, 1, 0.3, 1] }}
       className="absolute inset-0"
     >
       <div className="relative h-full overflow-hidden rounded-[2rem] border border-[#1D2A3A]/70 bg-gradient-to-br from-[#071426]/90 via-[#020617]/88 to-black/80 p-7 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl lg:p-10">
@@ -196,9 +197,19 @@ function MobileServiceCard({ service }: { service: Service }) {
   );
 }
 
-export default function Services() {
+export default function Services({ performanceMode = false }: { performanceMode?: boolean }) {
   const ref = useRef<HTMLElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const isNearViewport = useInView(ref, { margin: "75% 0px" });
+  const nearViewportRef = useRef(isNearViewport);
+  nearViewportRef.current = isNearViewport;
+  const {
+    activeIndex,
+    handleExitComplete,
+    queueScene,
+  } = useQueuedScene({
+    animated: !performanceMode,
+    isNearViewport,
+  });
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -210,7 +221,7 @@ export default function Services() {
       Math.floor(latest * services.length),
       services.length - 1
     );
-    setActiveIndex((current) => current === nextIndex ? current : nextIndex);
+    queueScene(nextIndex, !nearViewportRef.current);
   });
 
   return (
@@ -253,11 +264,16 @@ export default function Services() {
 
               {/* Escenario panorámico */}
               <div className="relative mt-5 h-[27rem] min-w-0">
-                <AnimatePresence initial={false}>
+                <AnimatePresence
+                  initial={false}
+                  presenceAffectsLayout={false}
+                  onExitComplete={handleExitComplete}
+                >
                   <ActiveServicePanel
                     key={services[activeIndex].id}
                     service={services[activeIndex]}
                     index={activeIndex}
+                    performanceMode={performanceMode}
                   />
                 </AnimatePresence>
               </div>

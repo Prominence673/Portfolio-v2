@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface TypingTextProps {
   text: string | string[];
@@ -19,22 +19,38 @@ export function TypingText({
   loop = true,
   className,
 }: TypingTextProps) {
-  const texts = Array.isArray(text) ? text : [text];
+  const texts = useMemo(() => (Array.isArray(text) ? text : [text]), [text]);
   const [displayed, setDisplayed] = useState("");
-  const [cursorVisible, setCursorVisible] = useState(true);
 
+  const rootRef = useRef<HTMLSpanElement>(null);
+  const activeRef = useRef(true);
   const indexRef = useRef(0);       
   const charRef = useRef(0);       
   const phaseRef = useRef<"typing" | "pausing" | "deleting">("typing");
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => setCursorVisible((v) => !v), 530);
-    return () => clearInterval(interval);
+    const element = rootRef.current;
+    if (!element || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        activeRef.current = entry.isIntersecting;
+      },
+      { rootMargin: "200px 0px" },
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
     function tick() {
+      if (!activeRef.current || document.hidden) {
+        timeoutRef.current = setTimeout(tick, 400);
+        return;
+      }
+
       const current = texts[indexRef.current];
       const phase = phaseRef.current;
 
@@ -77,18 +93,14 @@ export function TypingText({
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  // 
-  });
+  }, [deleteSpeed, loop, pauseTime, speed, texts]);
 
   return (
-    <span className={className}>
+    <span ref={rootRef} className={className}>
       {displayed}
       <span
-        style={{
-          opacity: cursorVisible ? 1 : 0,
-          transition: "opacity 0.1s",
-          marginLeft: "2px",
-        }}
+        className="typing-cursor"
+        style={{ marginLeft: "2px" }}
       >
         {cursorChar}
       </span>

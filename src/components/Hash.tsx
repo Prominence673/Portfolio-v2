@@ -12,7 +12,7 @@ export default function ScrollToHash() {
 
   useEffect(() => {
     if (hash) {
-      setTimeout(() => {
+      const timer = window.setTimeout(() => {
         const el = document.querySelector(hash);
         if (el) {
           el.scrollIntoView({
@@ -21,7 +21,7 @@ export default function ScrollToHash() {
           });
         }
       }, 100);
-      return;
+      return () => clearTimeout(timer);
     }
 
     if (pathname === "/") {
@@ -36,13 +36,9 @@ export default function ScrollToHash() {
 
       resetToTop();
       const frame = requestAnimationFrame(resetToTop);
-      const firstTimer = window.setTimeout(resetToTop, 120);
-      const secondTimer = window.setTimeout(resetToTop, 450);
 
       return () => {
         cancelAnimationFrame(frame);
-        clearTimeout(firstTimer);
-        clearTimeout(secondTimer);
       };
     }
   }, [hash, pathname]);

@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { useScroll, motion, MotionValue } from "framer-motion";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { useScroll, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import type { Project } from "./interface/Projects-interface";
 import { ArrowRight, Search, X } from "lucide-react";
@@ -47,23 +47,24 @@ export default function AllProjects() {
   }, [searchQuery]);
 
   // Obtener tecnologías únicas
-  const allTechs = Array.from(new Set(projects.flatMap((p) => p.tech)));
-  const statuses = Array.from(new Set(projects.map((p) => p.status)));
+  const allTechs = useMemo(() => Array.from(new Set(projects.flatMap((p) => p.tech))), []);
+  const statuses = useMemo(() => Array.from(new Set(projects.map((p) => p.status))), []);
 
   // Filtrar proyectos
-  const filteredProjects = projects.filter((project) => {
-    const matchesSearch =
-      project.title.toLowerCase().includes(searchQueryDebounced.toLowerCase()) ||
-      project.desc.toLowerCase().includes(searchQueryDebounced.toLowerCase());
+  const filteredProjects = useMemo(() => {
+    const normalizedQuery = searchQueryDebounced.toLowerCase();
+    return projects.filter((project) => {
+      const matchesSearch =
+        project.title.toLowerCase().includes(normalizedQuery) ||
+        project.desc.toLowerCase().includes(normalizedQuery);
+      const matchesStatus = !selectedStatus || project.status === selectedStatus;
+      const matchesTech =
+        selectedTechs.length === 0 ||
+        selectedTechs.some((tech) => project.tech.includes(tech));
 
-    const matchesStatus = !selectedStatus || project.status === selectedStatus;
-
-    const matchesTech =
-      selectedTechs.length === 0 ||
-      selectedTechs.some((tech) => project.tech.includes(tech));
-
-    return matchesSearch && matchesStatus && matchesTech;
-  });
+      return matchesSearch && matchesStatus && matchesTech;
+    });
+  }, [searchQueryDebounced, selectedStatus, selectedTechs]);
 
   // Paginación
   const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
@@ -261,7 +262,6 @@ export default function AllProjects() {
                         <AllProjectCard
                           project={project}
                           index={index}
-                          scrollYProgress={scrollYProgress}
                           navigate={navigate}
                         />
                       </div>
@@ -348,7 +348,6 @@ export default function AllProjects() {
 interface AllProjectCardProps {
   project: Project;
   index: number;
-  scrollYProgress: MotionValue<number>;
   navigate: ReturnType<typeof useNavigate>;
 }
 
@@ -370,6 +369,8 @@ function AllProjectCard({
       <img
         src={project.image}
         alt={project.title}
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
       />
 

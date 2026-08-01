@@ -124,6 +124,132 @@
   }
 }
 
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+@keyframes typing-cursor-blink {
+  0%,
+  40.6% {
+    opacity: 1;
+  }
+  50%,
+  90.6% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.typing-cursor {
+  animation: typing-cursor-blink 1.06s ease infinite;
+}
+
+@keyframes about-orbit-clockwise {
+  from { transform: rotate(-16deg); }
+  to { transform: rotate(344deg); }
+}
+
+@keyframes about-orbit-counterclockwise {
+  from { transform: rotate(18deg); }
+  to { transform: rotate(-342deg); }
+}
+
+@keyframes about-asteroid-orbit {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes about-moon-float-up {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes about-moon-float-down {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+@keyframes cosmic-star-pulse {
+  0%, 100% { opacity: 0.18; transform: scale(0.8); }
+  50% { opacity: 0.85; transform: scale(1.25); }
+}
+
+@keyframes cosmic-rotate-clockwise {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes cosmic-rotate-counterclockwise {
+  to { transform: rotate(-360deg); }
+}
+
+.ambient-motion {
+  will-change: transform;
+}
+
+.about-orbit-clockwise {
+  animation: about-orbit-clockwise 34s linear infinite;
+}
+
+.about-orbit-counterclockwise {
+  animation: about-orbit-counterclockwise 46s linear infinite;
+}
+
+.about-asteroid-orbit {
+  animation: about-asteroid-orbit 55s linear infinite;
+}
+
+.about-moon-float-up,
+.about-moon-float-down {
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.about-moon-float-up {
+  animation-name: about-moon-float-up;
+}
+
+.about-moon-float-down {
+  animation-name: about-moon-float-down;
+}
+
+.cosmic-star {
+  animation: cosmic-star-pulse var(--cosmic-duration) ease-in-out var(--cosmic-delay) infinite both;
+}
+
+.cosmic-orbit-clockwise {
+  animation: cosmic-rotate-clockwise 55s linear infinite;
+}
+
+.cosmic-orbit-counterclockwise {
+  animation: cosmic-rotate-counterclockwise 75s linear infinite;
+}
+
+.cosmic-singularity-clockwise {
+  animation: cosmic-rotate-clockwise 24s linear infinite;
+}
+
+.cosmic-singularity-counterclockwise {
+  animation: cosmic-rotate-counterclockwise 38s linear infinite;
+}
+
+html[data-fast-scroll] .ambient-motion {
+  animation-play-state: paused !important;
+}
+
 .scroll-scene {
   position: relative;
 }
@@ -178,14 +304,6 @@ html.performance-mode .scroll-scene * {
     animation-range: entry 4% cover 18%;
   }
 }
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
 *{
   cursor: none;
 }
@@ -195,15 +313,6 @@ html.performance-mode .scroll-scene * {
     cursor: auto;
   }
 }
-@keyframes scroll-reverse {
-  0% {
-    transform: translateX(-50%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
 /* ===== SCROLLBAR BASE ===== */
 
 /* Chrome, Edge, Safari */
@@ -233,24 +342,6 @@ html.performance-mode .scroll-scene * {
   scrollbar-width: thin;
   scrollbar-color: #05103d #020617;
 }
-.animate-scroll,
-.animate-scroll-reverse {
-  display: inline-flex;
-  width: max-content;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-.animate-scroll {
-  animation-name: scroll;
-  animation-duration: 30s;
-}
-
-.animate-scroll-reverse {
-  animation-name: scroll-reverse;
-  animation-duration: 30s;
-}
-
 /* Fondo global repetible (sin cortes entre secciones) */
 .app-gradient {
   /* Gradiente único con pasos intermedios (sin repetición) */
